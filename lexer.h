@@ -68,7 +68,7 @@ const std::set<std::string> rat18s_seperators = {"%%", "[", "]",
 //Operators
 const std::set<std::string> rat18s_operators = {"==", "^=", ">", 
                                             "<", "=>", "=<", "+", "-",
-                                            "*", "/"};
+                                            "*", "/", "="};
 
 //Token struct
 struct token {
