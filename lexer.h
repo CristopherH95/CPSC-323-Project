@@ -1,13 +1,12 @@
 #pragma once
 #include <fstream>
-#include <map>
+#include <iostream>
+#include <iomanip>
+#include <set>
 #include <vector>
 #include <string>
 //any more includes
 
-//TODO: lexer methods/members
-//Note: what is the best approach to implement state table?
-//Note2: should we handle file within class or within main?
 
 /*
     ***TABLES***
@@ -46,6 +45,36 @@
    /10/  9   10     ""
 */
 
+//Token names here
+const std::string sep_tok = "seperator";
+const std::string keyw_tok = "keyword";
+const std::string ident_tok = "identifier";
+const std::string integer_tok = "integer";
+const std::string real_tok = "real";
+const std::string op_tok = "operator";
+const std::string com_tok = "comment";
+const std::string err_rok = "error";
+
+//Keywords
+const std::set<std::string> rat18s_keywords = {"int", "if", "else", 
+                                            "endif", "while", "return",
+                                            "get", "put", "boolean",
+                                            "real", "function", "true",
+                                            "false"};
+//Seperators
+const std::set<std::string> rat18s_seperators = {"%%", "[", "]",
+                                            ";", ":", ",",
+                                            "(", ")", "{", "}"};
+const std::set<std::string> rat18s_operators = {"==", "^=", ">", 
+                                            "<", "=>", "=<", "+", "-",
+                                            "*", "/", ""};
+
+//Token struct
+struct token {
+    std::string type;
+    std::string lexeme;
+};
+
 
 class lexer {
     public:
@@ -54,8 +83,15 @@ class lexer {
         bool is_identifier(const std::string& token);
         bool is_integer(const std::string& token);
         bool is_real(const std::string& token);
+        void add_token(const std::string& type, const std::string& word);
+        void process_file(std::istream& input_file);
+        bool is_keyword(std::string word);
+        bool is_seperator(std::string symbol);
+        bool is_operator(std::string symbol);
+        void eval_seperators(std::string word, std::vector<std::string>& words);
+        void print_tokens(std::ostream& output_dest) const;
         //public members/methods
     private:
         //private members
-        std::vector<std::string> tokens;    //NOTE: should we use strings as tokens, or a structure for tokens?
+        std::vector<token> p_tokens;
 };

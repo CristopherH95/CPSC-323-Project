@@ -1,13 +1,13 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include "lexer.h"
 using namespace std;
 
-//TODO: grab filename from command line (or other input) and run logic
-
 int main(int argc, char** argv) {
     lexer rat18s_lex = lexer();
     string file_to_process;
+    fstream input_file;
 
     cout << "Program begin" << endl;
     if (argc < 2) {
@@ -16,7 +16,9 @@ int main(int argc, char** argv) {
     else {
         file_to_process = string(argv[1]);
         cout << "File to process: " << argv[1] << endl;
-        //do stuff
+        input_file.open(file_to_process);
+        rat18s_lex.process_file(input_file);
+        rat18s_lex.print_tokens(cout);
     }
 
     return 0;
