@@ -9,7 +9,7 @@ lexer::~lexer() {
 }
 
 //TODO: Documentation
-bool lexer::is_keyword(std::string word) {
+bool lexer::is_keyword(const std::string& word) const {
     bool found = false;
 
     if (rat18s_keywords.count(word) > 0) {
@@ -20,7 +20,7 @@ bool lexer::is_keyword(std::string word) {
 }
 
 //TODO: Documentation
-bool lexer::is_seperator(std::string symbol) {
+bool lexer::is_seperator(const std::string& symbol) const {
     bool found = false;
 
     if (rat18s_seperators.count(symbol) > 0) {
@@ -31,7 +31,7 @@ bool lexer::is_seperator(std::string symbol) {
 }
 
 //TODO: Documentation
-bool lexer::is_operator(std::string symbol) {
+bool lexer::is_operator(const std::string& symbol) const {
     bool found = false;
 
     if (rat18s_operators.count(symbol) > 0) {
@@ -51,7 +51,7 @@ void lexer::add_token(const std::string& type, const std::string& word) {
 }
 
 //TODO: Documentation
-void lexer::eval_seperators(std::string word, std::vector<std::string>& words) {
+void lexer::eval_seperators(const std::string& word, std::vector<std::string>& words) {
     int i = 0;
     int pos;
     int count_from_sep;

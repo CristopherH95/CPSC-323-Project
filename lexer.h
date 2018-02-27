@@ -65,9 +65,10 @@ const std::set<std::string> rat18s_keywords = {"int", "if", "else",
 const std::set<std::string> rat18s_seperators = {"%%", "[", "]",
                                             ";", ":", ",",
                                             "(", ")", "{", "}"};
+//Operators
 const std::set<std::string> rat18s_operators = {"==", "^=", ">", 
                                             "<", "=>", "=<", "+", "-",
-                                            "*", "/", ""};
+                                            "*", "/"};
 
 //Token struct
 struct token {
@@ -85,10 +86,10 @@ class lexer {
         bool is_real(const std::string& token);
         void add_token(const std::string& type, const std::string& word);
         void process_file(std::istream& input_file);
-        bool is_keyword(std::string word);
-        bool is_seperator(std::string symbol);
-        bool is_operator(std::string symbol);
-        void eval_seperators(std::string word, std::vector<std::string>& words);
+        bool is_keyword(const std::string& word) const;
+        bool is_seperator(const std::string& symbol) const;
+        bool is_operator(const std::string& symbol) const;
+        void eval_seperators(const std::string& word, std::vector<std::string>& words);
         void print_tokens(std::ostream& output_dest) const;
         //public members/methods
     private:
