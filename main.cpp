@@ -19,6 +19,7 @@ int main(int argc, char** argv) {
         input_file.open(file_to_process);
         rat18s_lex.process_file(input_file);
         rat18s_lex.print_tokens(cout);
+        input_file.close();
     }
 
     return 0;
