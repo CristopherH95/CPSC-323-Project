@@ -28,7 +28,7 @@ bool lexer::exist_tokens() const {
 //parameters: check_id (string) is the identifier name to check
 //returns: true/false
 //This function will check if the given name has been defined as an identifier
-bool is_id_defined(const std::string check_id) const {
+bool lexer::is_id_defined(const std::string check_id) const {
     bool found = false;
 
     if (identifiers.count(check_id) > 0) {
