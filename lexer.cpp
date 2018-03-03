@@ -8,6 +8,35 @@ lexer::~lexer() {
     //destructor
 }
 
+//get_tokens
+//parameters: none
+//returns: none
+//This function will return a constant reference to the p_tokens member
+const std::deque<token>& lexer::get_tokens() const {
+    return p_tokens;
+}
+
+//exist_tokens
+//parameters: none
+//returns: true/false
+//This function returns a boolean value for whether there exists any more tokens
+bool lexer::exist_tokens() const {
+    return p_tokens.empty();
+}
+
+//next_token
+//parameters: none
+//returns: token
+//This function will return the first token in order and then pop it from p_tokens
+token lexer::next_token() {
+    token first_token;
+
+    first_token = p_tokens.front();
+    p_tokens.pop_front();
+
+    return first_token;
+}
+
 //is_keyword
 //parameters: symbol (string) is the symbol to check
 //returns: true/false
@@ -64,6 +93,18 @@ void lexer::add_token(const std::string& type, const std::string& word) {
         identifiers.insert(next_token.lexeme);
     }
     p_tokens.push_back(next_token);
+}
+
+//add_token
+//parameters: copy_from (token) is a token struct to add to the p_tokens member
+//returns: none
+//This function will add a token to the lexer's p_tokens member variable with the
+//same values as the given token
+void lexer::add_token(token copy_from) {
+    if (copy_from.type == ident_tok && !(identifiers.count(copy_from.lexeme) > 0)) {
+        identifiers.insert(copy_from.lexeme);
+    }
+    p_tokens.push_back(copy_from);
 }
 
 //eval_seperators

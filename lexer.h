@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <set>
 #include <vector>
+#include <deque>
 #include <string>
 //any more includes
 
@@ -83,10 +84,14 @@ class lexer {
     public:
         lexer();
         ~lexer();
+        token next_token();
+        const std::deque<token>& get_tokens() const;
+        bool exist_tokens() const;
         bool is_identifier(const std::string& to_check);
         bool is_integer(const std::string& to_check);
         bool is_real(const std::string& to_check);
         void add_token(const std::string& type, const std::string& word);
+        void add_token(token copy_from);
         void process_file(std::istream& input_file);
         bool is_keyword(const std::string& word) const;
         bool is_seperator(const std::string& symbol) const;
@@ -122,5 +127,5 @@ class lexer {
                                                 {1,3,2} 
                                             }; //value of '-99' is used as a default to no state transition
         std::set<std::string> identifiers;
-        std::vector<token> p_tokens;
+        std::deque<token> p_tokens;
 };
