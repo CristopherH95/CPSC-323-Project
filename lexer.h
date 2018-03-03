@@ -53,7 +53,7 @@ const std::string integer_tok = "integer";
 const std::string real_tok = "real";
 const std::string op_tok = "operator";
 const std::string com_tok = "comment";
-const std::string err_rok = "error";
+const std::string err_tok = "error";
 
 //Keywords
 const std::set<std::string> rat18s_keywords = {"int", "if", "else", 
@@ -83,9 +83,9 @@ class lexer {
     public:
         lexer();
         ~lexer();
-        bool is_identifier(const std::string& token);
-        bool is_integer(const std::string& token);
-        bool is_real(const std::string& token);
+        bool is_identifier(const std::string& to_check);
+        bool is_integer(const std::string& to_check);
+        bool is_real(const std::string& to_check);
         void add_token(const std::string& type, const std::string& word);
         void process_file(std::istream& input_file);
         bool is_keyword(const std::string& word) const;
@@ -95,26 +95,32 @@ class lexer {
         void print_tokens(std::ostream& output_dest) const;
         //public members/methods
     private:
-	const int realState[10][3] = { 1,2,-99,
-			              -99,-99,3,
-                    		       4,5,3,
-				       6,7,-99,
-				       4,5,3,
-				       4,5,3,
-				       8,9,-99,
-				       8,9,-99,
-				       8,9,-99,
-				       8,9,-99 }; //value of '-99' is used as a default to no state transition
-	const int integerState[5][2] = { 1,2,
-					-99,-99,
-					 3,4,
-				         3,4,
-					 3,4 }; //value of '-99' is used as a default to no state transition
-	const int identifierState[4][3] = { 2,-99,-99,
-					    2,4,3,
-					   -99,-99,-99,
-					    2,4,3 }; //value of '-99' is used as a default to no state transition
         //private members
+        const int realState[10][3] =   { 
+                                            {1,2,-99},
+                                            {-99,-99,3},
+                                            {4,5,3},
+                                            {6,7,-99},
+                                            {4,5,3},
+                                            {4,5,3},
+                                            {8,9,-99},
+                                            {8,9,-99},
+                                            {8,9,-99},
+                                            {8,9,-99} 
+                                        }; //value of '-99' is used as a default to no state transition
+        const int integerState[5][2] =  { 
+                                            {1,2},
+                                            {-99,-99},
+                                            {3,4},
+                                            {3,4},
+                                            {3,4} 
+                                        }; //value of '-99' is used as a default to no state transition
+        const int identifierState[4][3] =   { 
+                                                {1,-99,-99},
+                                                {1,3,2},
+                                                {-99,-99,-99},
+                                                {1,3,2} 
+                                            }; //value of '-99' is used as a default to no state transition
         std::set<std::string> identifiers;
         std::vector<token> p_tokens;
 };
