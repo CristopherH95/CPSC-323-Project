@@ -69,6 +69,8 @@ const std::set<std::string> rat18s_seperators = {"%%", "[", "]",
 const std::set<std::string> rat18s_operators = {"==", "^=", ">", 
                                             "<", "=>", "=<", "+", "-",
                                             "*", "/", "="};
+//comment marker symbol
+const char rat18s_cmt_symbol = '!';
 
 //Token struct
 struct token {
@@ -94,5 +96,6 @@ class lexer {
         //public members/methods
     private:
         //private members
+        std::set<std::string> identifiers;
         std::vector<token> p_tokens;
 };
