@@ -87,6 +87,7 @@ class lexer {
         token next_token();
         const std::deque<token>& get_tokens() const;
         bool exist_tokens() const;
+        bool is_id_defined(const std::string check_id) const;
         bool is_identifier(const std::string& to_check);
         bool is_integer(const std::string& to_check);
         bool is_real(const std::string& to_check);

@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
     }
     else {
         file_to_process = string(argv[1]);
-        cout << "File to process: " << argv[1] << endl;
+        cout << "File to process: " << file_to_process << endl;
         input_file.open(file_to_process);
         rat18s_lex.process_file(input_file);
         rat18s_lex.print_tokens(cout);
