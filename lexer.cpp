@@ -210,18 +210,181 @@ void lexer::process_file(std::istream& input_file) {
 
 
 bool lexer::is_identifier(const std::string& token) {
-    //finite state machine check for identifier
-    return false;
+    	int currentState = 0;
+	std::string word;
+	word = token;
+	int input = 99; //make starting value unattainable
+	for (int i = 0; i < word.size(); i++) //loop through each char of string word
+	{
+		if (isalpha(word[i]))
+			input = 0; //input is a letter
+		else if (isdigit(word[i]))
+			input = 1; //input is a digit
+		else if (word[i] == '$')
+			input = 2; //input is a $ (dollar sign)
+		else
+			return false;
+		switch (input)
+		{
+			case 0: //state transition for letter input
+				if (currentState == -99)
+				{
+					return false;
+				}
+				else
+					currentState = identifierState[currentState][input];
+				break;
+			case 1: //state transition for digit input
+				if (currentState == -99)
+				{
+					return false;
+				}
+				else
+					currentState = identifierState[currentState][input];
+				break;
+			case 2:
+				if (currentState == -99)
+				{
+					return false;
+				}
+				else
+					currentState = identifierState[currentState][input];
+				break;
+			default: return false;
+				break;
+		}
+	}
+
+	switch (currentState)
+	{
+		case 1:
+		case 2:
+			return true; //return true for currentState = 1,2
+			break;
+		default:
+			return false;
+			break;
+	}	
+    
 }
 
 bool lexer::is_integer(const std::string& token) {
-    //finite state machine check for integer
-    return false;
+    	int currentState = 0;
+	std::string word;
+	word = token;
+	int input = 99; //set default to non-attainable input value
+	for (int i = 0; i < word.size(); i++) //loop through each char of string word
+	{
+		if (isdigit(word[i]))
+			if (word[i] == '0')
+				input = 0;
+			else
+				input = 1; //input is a digit
+		else
+		{
+			return false;
+			break;
+		}
+
+		switch (input)
+		{
+			case 0: //input is a 0
+				if (currentState == -99) //checks if there exists a valid state transition
+				{
+					return false;
+				}
+				else
+					currentState = identifierState[currentState][input]; //POTENTIAL ERROR NEED TO REFERENCE CLASS ARRAY
+				break;
+			case 1:
+				if (currentState == -99) //checks if there exists a valid state transition
+				{
+					return false;
+				}
+				else
+					currentState = identifierState[currentState][input]; //POTENTIAL ERROR NEED TO REFERENCE CLASS ARRAY
+				break;
+			default: return false;
+				break;
+		}
+	}
+	switch (currentState)
+	{
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			return true; //return true for currentState = 1,2,3,4
+			break;
+		default:
+			return false;
+			break;
+	}
+    
 }
 
 bool lexer::is_real(const std::string& token) {
-    //finite state machine check for real
-    return false;
+    int currentState = 0;
+	std::string word;
+	word = token;
+	int input = 99; //set default to non-attainable input value
+	for (int i = 0; i < word.size(); i++) //loop through each char of string word
+	{
+		if (isdigit(word[i]))
+			if (word[i] == '0')
+				input = 0; //input is a Zero
+			else
+				input = 1; //input is a digit
+		else if (word[i] == '.')
+			input = 2; //input is a '.' (DOT)
+		else
+		{
+			return false;
+		}
+
+		switch (input)
+		{
+			case 0: //input is a 0
+				if (currentState == -99) //checks if there exists a valid state transition
+				{
+					return false;
+				}
+				else
+					currentState = realState[currentState][input]; //POTENTIAL ERROR NEED TO REFERENCE CLASS ARRAY	
+				break;
+			case 1: //input is a digit (1-9)
+				if (currentState == -99) //checks if there exists a valid state transition
+				{
+					return false;
+				}
+				else
+					currentState = realState[currentState][input]; //POTENTIAL ERROR NEED TO REFERENCE CLASS ARRAY	
+				break;
+			case 2: //input is a dot
+				if (currentState == -99) //checks if there exists a valid state transition
+				{
+					return false;
+				}
+				else
+					currentState = realState[currentState][input]; //POTENTIAL ERROR NEED TO REFERENCE CLASS ARRAY	
+				break;
+			default: return false;
+				break;
+		}
+	}
+	switch (currentState)
+	{
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+			return true; //checks end state and returns true if in accepting state
+			break;
+		default:
+			return false;
+			break;
+	}
+    
 }
 
 //TODO: Documentation

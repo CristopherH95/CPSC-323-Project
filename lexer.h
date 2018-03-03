@@ -95,6 +95,25 @@ class lexer {
         void print_tokens(std::ostream& output_dest) const;
         //public members/methods
     private:
+	const int realState[10][3] = { 1,2,-99,
+			              -99,-99,3,
+                    		       4,5,3,
+				       6,7,-99,
+				       4,5,3,
+				       4,5,3,
+				       8,9,-99,
+				       8,9,-99,
+				       8,9,-99,
+				       8,9,-99 }; //value of '-99' is used as a default to no state transition
+	const int integerState[5][2] = { 1,2,
+					-99,-99,
+					 3,4,
+				         3,4,
+					 3,4 }; //value of '-99' is used as a default to no state transition
+	const int identifierState[4][3] = { 2,-99,-99,
+					    2,4,3,
+					   -99,-99,-99,
+					    2,4,3 }; //value of '-99' is used as a default to no state transition
         //private members
         std::set<std::string> identifiers;
         std::vector<token> p_tokens;
