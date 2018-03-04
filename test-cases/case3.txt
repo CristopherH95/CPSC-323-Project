@@ -1,0 +1,31 @@
+function divideby2$[num:real]
+{
+	return num / 2;
+}
+
+function printtosquare[base:real]
+{
+	while (base < base * base)
+	{
+		put(base);
+		base = base + 1;
+	}
+	return true;
+}
+
+%%
+
+ real data;
+ get(data);
+ if (printtosquare(data))
+ {
+	put(0);
+ }
+ else
+ {
+	put(divideby2$(data));
+ }
+ data = data + 0.25;
+ data = data - 0.05;
+ put(data);
+ put(0);

@@ -1,0 +1,10 @@
+function print$ [data:int]
+{
+	put(data);
+}
+
+%%
+
+ int data;
+ get(data);
+ print$(data)
