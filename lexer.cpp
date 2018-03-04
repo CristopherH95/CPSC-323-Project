@@ -215,23 +215,19 @@ void lexer::process_file(std::istream& input_file) {
     std::vector<std::string> seperated_words;
 
     while (input_file >> word) {
-        std::cerr << "Current word: " << word << std::endl;
+        //std::cerr << "Current word: " << word << std::endl;
         seperated_words.clear();
-        std::cerr << "Beginning seperator checks..." << std::endl;
+        //std::cerr << "Beginning seperator checks..." << std::endl;
         eval_seperators(word, seperated_words);
-        std::cerr << "SEPERATED WORDS AFTER CHECKS: " << std::endl;
-        for (int i = 0; i < seperated_words.size(); i++) {
-            std::cerr << seperated_words[i] << " " << std::endl;
-        }
-        std::cerr << "Seperator checks done, checking tokens..." << std::endl;
+        //std::cerr << "Seperator checks done, checking tokens..." << std::endl;
         for (int i = 0; i < seperated_words.size(); i++) {
             if (seperated_words[i][0] == rat18s_cmt_symbol && comment == false) {
-                std::cerr << "Comment found, tracking..." << std::endl;
+                //std::cerr << "Comment found, tracking..." << std::endl;
                 comment = true;
                 comment_text += seperated_words[i] + " ";
             }
             else if (seperated_words[i][0] == rat18s_cmt_symbol && comment == true) {
-                std::cerr << "Comment complete." << std::endl;
+                //std::cerr << "Comment complete." << std::endl;
                 comment = false;
                 comment_text += seperated_words[i];
                 this->add_token(com_tok, comment_text);
@@ -239,46 +235,46 @@ void lexer::process_file(std::istream& input_file) {
                 continue;
             }
             else if (comment) {
-                std::cerr << "text is a comment: " << seperated_words[i] << std::endl;
+                //std::cerr << "text is a comment: " << seperated_words[i] << std::endl;
                 comment_text = comment_text + seperated_words[i] + " ";
             }
             if (!comment && seperated_words[i][0] == '-') {
-                std::cerr << "STRING IS OP: " << seperated_words[i][0] << std::endl;
+                //std::cerr << "STRING IS OP: " << seperated_words[i][0] << std::endl;
                 this->add_token(op_tok, std::string(1, seperated_words[i][0]));
                 seperated_words[i].erase(0, 1);
             }
             if (!comment && is_operator(seperated_words[i])) {
-                std::cerr << "STRING IS OP: " << seperated_words[i] << std::endl;
+                //std::cerr << "STRING IS OP: " << seperated_words[i] << std::endl;
                 this->add_token(op_tok, seperated_words[i]);
                 continue;
             }
             else if (!comment && is_seperator(seperated_words[i])) {
-                std::cerr << "STRING IS SEP: " << seperated_words[i] << std::endl;
+                //std::cerr << "STRING IS SEP: " << seperated_words[i] << std::endl;
                 this->add_token(sep_tok, seperated_words[i]);
                 continue;
             }
             else if (!comment && is_identifier(seperated_words[i])) {
-                std::cerr << "STRING IS ID: " << seperated_words[i] << std::endl;
-                std::cerr << "Performing additional check...";
+                //std::cerr << "STRING IS ID: " << seperated_words[i] << std::endl;
+                //std::cerr << "Performing additional check...";
                 if (!is_keyword(seperated_words[i])) {
-                    std::cerr << "Identified as identifier." << std::endl;
+                    //std::cerr << "Identified as identifier." << std::endl;
                     this->add_token(ident_tok, seperated_words[i]);
                 }
                 else {
-                    std::cerr << "Identified as keyword." << std::endl;
+                    //std::cerr << "Identified as keyword." << std::endl;
                     this->add_token(keyw_tok, seperated_words[i]);
                 }
             }
             else if (!comment && is_integer(seperated_words[i])) {
-                std::cerr << "STRING IS INT: " << seperated_words[i] << std::endl;
+                //std::cerr << "STRING IS INT: " << seperated_words[i] << std::endl;
                 this->add_token(integer_tok, seperated_words[i]);
             }
             else if (!comment && is_real(seperated_words[i])) {
-                std::cerr << "STRING IS REAL: " << seperated_words[i] << std::endl;
+                //std::cerr << "STRING IS REAL: " << seperated_words[i] << std::endl;
                 this->add_token(real_tok, seperated_words[i]);
             }
             else if (!comment) {
-                std::cerr << "STRING IS ERROR: " << seperated_words[i] << std::endl;
+                //std::cerr << "STRING IS ERROR: " << seperated_words[i] << std::endl;
                 this->add_token(err_tok, seperated_words[i]);
             }
         }
