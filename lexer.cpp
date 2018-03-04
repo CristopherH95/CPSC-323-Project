@@ -219,6 +219,9 @@ void lexer::process_file(std::istream& input_file) {
         seperated_words.clear();
         //std::cerr << "Beginning seperator checks..." << std::endl;
         eval_seperators(word, seperated_words);
+        for (int i = 0; i < seperated_words.size(); i++) {
+            //std::cerr << seperated_words[i] << std::endl;
+        }
         //std::cerr << "Seperator checks done, checking tokens..." << std::endl;
         for (int i = 0; i < seperated_words.size(); i++) {
             if (seperated_words[i][0] == rat18s_cmt_symbol && comment == false) {
@@ -238,7 +241,7 @@ void lexer::process_file(std::istream& input_file) {
                 //std::cerr << "text is a comment: " << seperated_words[i] << std::endl;
                 comment_text = comment_text + seperated_words[i] + " ";
             }
-            if (!comment && seperated_words[i][0] == '-') {
+            if (!comment && seperated_words[i].size() > 1 && seperated_words[i][0] == '-') {
                 //std::cerr << "STRING IS OP: " << seperated_words[i][0] << std::endl;
                 this->add_token(op_tok, std::string(1, seperated_words[i][0]));
                 seperated_words[i].erase(0, 1);

@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
         rat18s_lex.print_tokens(output_file);
         output_file.close();
         input_file.close();
+        cout << "Done." << endl;
     }
 
     return 0;
