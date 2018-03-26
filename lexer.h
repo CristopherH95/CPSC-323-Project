@@ -6,6 +6,7 @@
 #include <vector>
 #include <deque>
 #include <string>
+#include <sstream>
 //any more includes
 
 
@@ -77,6 +78,7 @@ const char rat18s_cmt_symbol = '!';
 struct token {
     std::string type;
     std::string lexeme;
+    unsigned int line_number;
 };
 
 
@@ -91,7 +93,7 @@ class lexer {
         bool is_identifier(const std::string& to_check);
         bool is_integer(const std::string& to_check);
         bool is_real(const std::string& to_check);
-        void add_token(const std::string& type, const std::string& word);
+        void add_token(const std::string& type, const std::string& word, unsigned int l_num);
         void add_token(token copy_from);
         void process_file(std::istream& input_file);
         bool is_keyword(const std::string& word) const;
