@@ -4,6 +4,7 @@
 #include "lexer.h"
 using namespace std;
 
+//TODO: update main to reflect addition of parser class
 int main(int argc, char** argv) {
     lexer rat18s_lex = lexer();
     string file_to_process;
