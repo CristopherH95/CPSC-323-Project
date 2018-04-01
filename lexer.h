@@ -50,9 +50,9 @@
 //Token names here
 const std::string sep_tok = "seperator";
 const std::string keyw_tok = "keyword";
-const std::string ident_tok = "identifier";
-const std::string integer_tok = "integer";
-const std::string real_tok = "real";
+const std::string ident_tok = "<Identifier>";
+const std::string integer_tok = "<Integer>";
+const std::string real_tok = "<Real>";
 const std::string op_tok = "operator";
 const std::string com_tok = "comment";
 const std::string err_tok = "error";
