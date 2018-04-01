@@ -87,7 +87,7 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::
             db_output_dest << parsing_stack.top() << "->";
             parsing_stack.pop();
             next_prod = parse_table[std::make_pair(parsing_stack.top(), curr_sym)];
-            db_output_dest << this->prod_to_string(next_prod);
+            db_output_dest << this->prod_to_string(next_prod) << std::endl;
             for (int i = next_prod.size() - 1; i >= 0; i--) {
                 parsing_stack.push(next_prod[i]);
             }
