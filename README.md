@@ -1,6 +1,14 @@
 # CPSC-323-Project
 
-using makefile:
+<h1>Project 1: Lexical Analyzer</h1>
+
+-A lexical analyzer for a fictional language, RAT18S.
+
+<h1>Project 2: Syntax Analyzer</h1>
+
+-A parser for RAT18S
+
+<b>using makefile:</b>
 
 <h2>Linux</h2>
 
@@ -24,11 +32,3 @@ Clean:
 mingw32-make clean
 ```
 
-
-<b>Project 1: Lexical Analyzer</b>
-
--A lexical analyzer for a fictional language, RAT18S.
-
-<b>Project 2: Syntax Analyzer</b>
-
--A parser for RAT18S
