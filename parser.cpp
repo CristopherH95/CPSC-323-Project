@@ -79,17 +79,25 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
     return fail_state;
 }
 
+//TODO: Add epsilon transition handling
 void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::ostream& db_output_dest, bool& fail_flag) {
     prod next_prod;
+    int prod_end;
 
     if (this->is_valid(std::make_pair(parsing_stack.top(), curr_sym))) {
         do {
             db_output_dest << parsing_stack.top() << "->";
             parsing_stack.pop();
             next_prod = parse_table[std::make_pair(parsing_stack.top(), curr_sym)];
-            db_output_dest << this->prod_to_string(next_prod) << std::endl;
-            for (int i = next_prod.size() - 1; i >= 0; i--) {
-                parsing_stack.push(next_prod[i]);
+            prod_end = next_prod.size() - 1;
+            if (next_prod[prod_end] != empty) {
+                db_output_dest << this->prod_to_string(next_prod) << std::endl;
+                for (int i = prod_end; i >= 0; i--) {
+                    parsing_stack.push(next_prod[i]);
+                }
+            }
+            else {
+                db_output_dest << this->prod_to_string(next_prod) << std::endl;
             }
         }while (this->is_valid(std::make_pair(parsing_stack.top(), curr_sym)) && 
                 curr_sym != parsing_stack.top() &&
