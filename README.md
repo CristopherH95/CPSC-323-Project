@@ -8,7 +8,6 @@
 
 -A parser for RAT18S
 
-<b>using makefile:</b>
 
 <h2>Linux</h2>
 
