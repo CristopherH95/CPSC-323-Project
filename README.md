@@ -2,14 +2,26 @@
 
 using makefile:
 
-Linux
+<h2>Linux</h2>
+
+Compile:
 ```
 make
 ```
+Clean:
+```
+make clean
+```
 
-Windows (requires mingw32)
+<h2>Windows (requires mingw32)</h2>
+
+Compile:
 ```
 mingw32-make
+```
+Clean:
+```
+mingw32-make clean
 ```
 
 
