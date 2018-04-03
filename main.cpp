@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
         cout << "USAGE: " << argv[0] << " <input file name> <output file name>" << endl;
     }
     else {
-        cout << "Starting lexical analyzer. . ." << endl;
+        cout << "Starting compilation process. . ." << endl;
         file_to_process = string(argv[1]);
         target_file = string(argv[2]);
         cout << "Processing file: " << file_to_process << endl;
