@@ -21,7 +21,7 @@ const std::deque<token>& lexer::get_tokens() const {
 //returns: true/false
 //This function returns a boolean value for whether there exists any more tokens
 bool lexer::exist_tokens() const {
-    return p_tokens.empty();
+    return !(p_tokens.empty());
 }
 
 //is_id_defined

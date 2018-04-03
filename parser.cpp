@@ -251,7 +251,7 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
     std::string in_symbol;
     bool fail_state = false;
 
-    while (parsing_stack.top() != END && !fail_state) {
+    while (parsing_stack.top() != END && !fail_state && rat18s_lex.exist_tokens()) {
         curr_tok = rat18s_lex.next_token();
         db_output_dest << "Token: " << curr_tok.type << " Lexeme: " << curr_tok.lexeme << std::endl;
 
