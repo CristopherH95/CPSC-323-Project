@@ -88,6 +88,8 @@ class lexer {
         ~lexer();
         token next_token();
         const std::deque<token>& get_tokens() const;
+        bool check_tokens(std::ostream& output_dest);
+        bool check_tokens();
         bool exist_tokens() const;
         bool is_id_defined(const std::string check_id) const;
         bool is_identifier(const std::string& to_check);

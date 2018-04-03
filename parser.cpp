@@ -205,6 +205,14 @@ parser::parser() {
     parse_table.insert(std::make_pair(std::make_pair(FCTR, LIT_FALSE), PROD57));
     parse_table.insert(std::make_pair(std::make_pair(PRIM, LIT_FALSE), PROD63));
     parse_table.insert(std::make_pair(std::make_pair(SLP, END), PRODE));
+    //test adding empty productions for semicolons
+    parse_table.insert(std::make_pair(std::make_pair(EPPP, SEMICOL), PRODE));
+    parse_table.insert(std::make_pair(std::make_pair(EP, SEMICOL), PRODE));
+    parse_table.insert(std::make_pair(std::make_pair(EPP, SEMICOL), PRODE));
+    parse_table.insert(std::make_pair(std::make_pair(TPPP, SEMICOL), PRODE));
+    parse_table.insert(std::make_pair(std::make_pair(TP, SEMICOL), PRODE));
+    parse_table.insert(std::make_pair(std::make_pair(TPP, SEMICOL), PRODE));
+    parse_table.insert(std::make_pair(std::make_pair(PRIMP, SEMICOL), PRODE));
     std::cerr << "Done" << std::endl;
 }
 
@@ -249,9 +257,9 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
     std::cerr << "Beginning parse..." << std::endl;
     token curr_tok;
     std::string in_symbol;
-    bool fail_state = false;
+    bool good_parse = true;
 
-    while (parsing_stack.top() != END && !fail_state && rat18s_lex.exist_tokens()) {
+    while (parsing_stack.top() != END && good_parse && rat18s_lex.exist_tokens()) {
         curr_tok = rat18s_lex.next_token();
         db_output_dest << "Token: " << curr_tok.type << " Lexeme: " << curr_tok.lexeme << std::endl;
 
@@ -261,15 +269,16 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
         else {
             in_symbol = curr_tok.lexeme;
         }
-        this->derive_next(curr_tok, in_symbol, db_output_dest, fail_state);
+        std::cerr << "Stack top before derive: " << parsing_stack.top() << std::endl;
+        this->derive_next(curr_tok, in_symbol, db_output_dest, good_parse);
     }
     std::cerr << "Parse complete" << std::endl;
 
-    return fail_state;
+    return good_parse;
 }
 
 //TODO: Add epsilon transition handling
-void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::ostream& db_output_dest, bool& fail_flag) {
+void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::ostream& db_output_dest, bool& good_parse) {
     std::cerr << "Performing derivation..." << std::endl;
     std::cerr << "Input symbol for derivation: " << curr_sym << std::endl;
     prod next_prod;
@@ -301,32 +310,35 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::
                 parsing_stack.top() != END);
         
         if (curr_sym == parsing_stack.top()) {
+            //db_output_dest << in_sym.type << " -> " << in_sym.lexeme << std::endl;
             parsing_stack.pop();
         }
         else if (!this->is_valid(std::make_pair(parsing_stack.top(), curr_sym))) {
-            std::cerr << "Syntax error: unexpected token " << in_sym.lexeme 
-                           << " at line " << in_sym.line_number
+            std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
+                           << "' at line " << in_sym.line_number
                            << std::endl;
-            fail_flag = true;
+            good_parse = false;
         }
         else if (parsing_stack.top() == END) {
             db_output_dest << "END SYMBOL REACHED" << std::endl;
         }
         else {
-            std::cerr << "Unexpected fail state while processing: " << in_sym.lexeme
-                           << " at line " << in_sym.line_number
+            std::cerr << "Unexpected fail state while processing: '" << in_sym.lexeme
+                           << "' at line " << in_sym.line_number
                            << ", check parser source code" << std::endl;
-            fail_flag = true;
+            good_parse = false;
         }
     }
     else if (curr_sym == parsing_stack.top()) {
+        db_output_dest << "TERMINAL MATCH" << std::endl;
         parsing_stack.pop();
     }
     else {
         std::cerr << "Could not find symbol pair...fail state set." << std::endl;
-        std::cerr << "Syntax error: unexpected token " << in_sym.lexeme 
-                       << " at line " << in_sym.line_number
+        std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
+                       << "' at line " << in_sym.line_number
                        << std::endl;
-        fail_flag = true;
+        good_parse = false;
     }
+    std::cerr << "Stack top after derive: " << parsing_stack.top() << std::endl;
 }

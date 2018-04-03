@@ -172,7 +172,7 @@ class parser {
         std::string prod_to_string(const prod& production) const;
         void initialize_parse();
         bool parse(lexer& rat18s_lex, std::ostream& db_output_dest);
-        void derive_next(const token& in_sym, const std::string& curr_sym, std::ostream& db_output_dest, bool& fail_flag);
+        void derive_next(const token& in_sym, const std::string& curr_sym, std::ostream& db_output_dest, bool& good_parse);
         
     private:
         std::map<std::pair<std::string, std::string>, prod> parse_table;

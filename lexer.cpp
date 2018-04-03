@@ -16,6 +16,46 @@ const std::deque<token>& lexer::get_tokens() const {
     return p_tokens;
 }
 
+bool lexer::check_tokens(std::ostream& output_dest) {
+    bool good_check = true;
+
+    for (std::deque<token>::iterator it = p_tokens.begin(); it != p_tokens.end();) {
+        if (it->type == com_tok) {
+            it = p_tokens.erase(it);
+        }
+        else if (it->type == err_tok) {
+            output_dest << "Error invalid token: '" << it->lexeme
+                        << "' on line " << it->line_number << std::endl;
+            good_check = false;
+        }
+        else {
+            ++it;
+        }
+    }
+
+    return good_check;
+}
+
+bool lexer::check_tokens() {
+    bool good_check = true;
+
+    for (std::deque<token>::iterator it = p_tokens.begin(); it != p_tokens.end();) {
+        if (it->type == com_tok) {
+            it = p_tokens.erase(it);
+        }
+        else if (it->type == err_tok) {
+            std::cerr << "Error invalid token: '" << it->lexeme
+                        << "' on line " << it->line_number << std::endl;
+            good_check = false;
+        }
+        else {
+            ++it;
+        }
+    }
+
+    return good_check;
+}
+
 //exist_tokens
 //parameters: none
 //returns: true/false

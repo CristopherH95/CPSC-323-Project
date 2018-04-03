@@ -13,6 +13,7 @@ int main(int argc, char** argv) {
     string target_file;
     fstream input_file;
     ofstream output_file;
+    bool good;
 
     if (argc < 3) {
         cout << "USAGE: " << argv[0] << " <input file name> <output file name>" << endl;
@@ -25,12 +26,21 @@ int main(int argc, char** argv) {
         cout << "Saving output to file: " << target_file << endl;
         input_file.open(file_to_process);
         rat18s_lex.process_file(input_file);
-        rat18s_par.initialize_parse();
-        output_file.open(target_file);
-        rat18s_par.parse(rat18s_lex, output_file);
+        good = rat18s_lex.check_tokens(output_file);
+        if (good) {
+            rat18s_par.initialize_parse();
+            output_file.open(target_file);
+            good = rat18s_par.parse(rat18s_lex, output_file);
+        }
         output_file.close();
         input_file.close();
-        cout << "Done." << endl;
+        if (!good) {
+            cout << "Compilation failed." << endl;
+        }
+        else {
+            output_file << "Done." << endl;
+            cout << "Done." << endl;
+        }
     }
 
     return 0;
