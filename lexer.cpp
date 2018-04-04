@@ -47,6 +47,7 @@ bool lexer::check_tokens() {
             std::cerr << "Error invalid token: '" << it->lexeme
                         << "' on line " << it->line_number << std::endl;
             good_check = false;
+            ++it;
         }
         else {
             ++it;
