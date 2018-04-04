@@ -6,6 +6,7 @@
 #include <vector>
 #include <deque>
 #include <string>
+#include <sstream>
 //any more includes
 
 
@@ -49,9 +50,9 @@
 //Token names here
 const std::string sep_tok = "seperator";
 const std::string keyw_tok = "keyword";
-const std::string ident_tok = "identifier";
-const std::string integer_tok = "integer";
-const std::string real_tok = "real";
+const std::string ident_tok = "<Identifier>";
+const std::string integer_tok = "<Integer>";
+const std::string real_tok = "<Real>";
 const std::string op_tok = "operator";
 const std::string com_tok = "comment";
 const std::string err_tok = "error";
@@ -77,6 +78,7 @@ const char rat18s_cmt_symbol = '!';
 struct token {
     std::string type;
     std::string lexeme;
+    unsigned int line_number;
 };
 
 
@@ -86,12 +88,14 @@ class lexer {
         ~lexer();
         token next_token();
         const std::deque<token>& get_tokens() const;
+        bool check_tokens(std::ostream& output_dest);
+        bool check_tokens();
         bool exist_tokens() const;
         bool is_id_defined(const std::string check_id) const;
         bool is_identifier(const std::string& to_check);
         bool is_integer(const std::string& to_check);
         bool is_real(const std::string& to_check);
-        void add_token(const std::string& type, const std::string& word);
+        void add_token(const std::string& type, const std::string& word, unsigned int l_num);
         void add_token(token copy_from);
         void process_file(std::istream& input_file);
         bool is_keyword(const std::string& word) const;

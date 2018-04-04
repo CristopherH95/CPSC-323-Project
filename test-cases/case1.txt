@@ -7,4 +7,4 @@ function print$ [data:int]
 
  int data;
  get(data);
- print$(data)
+ print$(data);
