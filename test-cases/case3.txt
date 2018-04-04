@@ -17,7 +17,7 @@ function printtosquare[base:real]
 
  real data;
  get(data);
- if (printtosquare(data))
+ if (data < 100)
 	put(0);
  else
 	put(divideby2$(data));
