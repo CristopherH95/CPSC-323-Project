@@ -1,10 +1,10 @@
 # CPSC-323-Project
 
-<h1>Project 1: Lexical Analyzer</h1>
+<h1>Part 1: Lexical Analyzer</h1>
 
 -A lexical analyzer for a fictional language, RAT18S.
 
-<h1>Project 2: Syntax Analyzer</h1>
+<h1>Part 2: Syntax Analyzer</h1>
 
 -A parser for RAT18S
 
