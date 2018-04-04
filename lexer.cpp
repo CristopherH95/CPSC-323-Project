@@ -27,6 +27,7 @@ bool lexer::check_tokens(std::ostream& output_dest) {
             output_dest << "Error invalid token: '" << it->lexeme
                         << "' on line " << it->line_number << std::endl;
             good_check = false;
+            ++it;
         }
         else {
             ++it;
