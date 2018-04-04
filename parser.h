@@ -92,6 +92,7 @@ const std::string LIT_FALSE = "false";
 const std::string END = "$";
 const std::string empty = "<empty>";
 
+//productions typedef
 typedef std::vector<std::string> prod;
 
 //these correspond to all the productions from our set
@@ -99,7 +100,6 @@ const prod PRODE = { empty };
 const prod PROD1 = { OFD, PERCENT, ODL, SL  };
 const prod PROD2 = { FD };
 const prod PROD3 = { FN, FDP };
-//const prod PROD4 = { FD };
 const prod PROD4 = { FUNCTION, ABS_IDENTIFIER, LBRACK, OPL, RBRACK, ODL, B };
 const prod PROD5 = { PL };
 const prod PROD6 = { P, PLP };
@@ -111,14 +111,12 @@ const prod PROD11 = { LIT_REAL };
 const prod PROD12 = { LCURL, SL, RCURL };
 const prod PROD13 = { DL };
 const prod PROD14 = { D, SEMICOL, DLP };
-//const prod PROD16 = { DL };
 const prod PROD15 = { LIT_INT, IDS };
 const prod PROD16 = { LIT_BOOL, IDS };
 const prod PROD17 = { LIT_REAL, IDS };
 const prod PROD18 = { ABS_IDENTIFIER, IDSP };
 const prod PROD19 = { COMM, IDS };
 const prod PROD20 = { S, SLP };
-//const prod PROD21 = { SL };
 const prod PROD21 = { CP };
 const prod PROD22 = { A };
 const prod PROD23 = { IF };

@@ -1,8 +1,10 @@
 #include "parser.h"
 
+//parser
+//constructor of parser class which builds the parse table upon object creation
 parser::parser() {
     //Parse table is a map using pairs of non-terminals and terminals
-    std::cerr << "Constructing parse table...";
+    std::cerr << "Constructing parse table";
     parse_table.insert(std::make_pair(std::make_pair(RAT18S, PERCENT), PROD1));
     parse_table.insert(std::make_pair(std::make_pair(OFD, PERCENT), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(FDP, PERCENT), PRODE));
@@ -48,6 +50,7 @@ parser::parser() {
     parse_table.insert(std::make_pair(std::make_pair(FCTR, LPARAN), PROD57));
     parse_table.insert(std::make_pair(std::make_pair(PRIM, LPARAN), PROD60));
     parse_table.insert(std::make_pair(std::make_pair(PRIMP, LPARAN), PROD64));
+    std::cerr << ".";
     parse_table.insert(std::make_pair(std::make_pair(IDSP, RPARAN), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(EPPP, RPARAN), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(EP, RPARAN), PRODE));
@@ -99,6 +102,7 @@ parser::parser() {
     parse_table.insert(std::make_pair(std::make_pair(ODL, EQEQ), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(RE, NEQ), PROD41));
     parse_table.insert(std::make_pair(std::make_pair(EPPP, NEQ), PRODE));
+    std::cerr << ".";
     parse_table.insert(std::make_pair(std::make_pair(EP, NEQ), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(EPP, NEQ), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(TPPP, NEQ), PRODE));
@@ -175,6 +179,7 @@ parser::parser() {
     parse_table.insert(std::make_pair(std::make_pair(COND, ABS_REAL), PROD39));
     parse_table.insert(std::make_pair(std::make_pair(E, ABS_REAL), PROD46));
     parse_table.insert(std::make_pair(std::make_pair(T, ABS_REAL), PROD51));
+    parse_table.insert(std::make_pair(std::make_pair(FCTR, ABS_REAL), PROD57));
     parse_table.insert(std::make_pair(std::make_pair(PRIM, ABS_REAL), PROD61));
     parse_table.insert(std::make_pair(std::make_pair(OPL, ABS_IDENTIFIER), PROD5));
     parse_table.insert(std::make_pair(std::make_pair(PL, ABS_IDENTIFIER), PROD6));
@@ -191,6 +196,7 @@ parser::parser() {
     parse_table.insert(std::make_pair(std::make_pair(E, ABS_IDENTIFIER), PROD46));
     parse_table.insert(std::make_pair(std::make_pair(T, ABS_IDENTIFIER), PROD51));
     parse_table.insert(std::make_pair(std::make_pair(FCTR, ABS_IDENTIFIER), PROD57));
+    std::cerr << ".";
     parse_table.insert(std::make_pair(std::make_pair(PRIM, ABS_IDENTIFIER), PROD58));
     parse_table.insert(std::make_pair(std::make_pair(RETP, LIT_TRUE), PROD35));
     parse_table.insert(std::make_pair(std::make_pair(COND, LIT_TRUE), PROD39));
@@ -205,7 +211,6 @@ parser::parser() {
     parse_table.insert(std::make_pair(std::make_pair(FCTR, LIT_FALSE), PROD57));
     parse_table.insert(std::make_pair(std::make_pair(PRIM, LIT_FALSE), PROD63));
     parse_table.insert(std::make_pair(std::make_pair(SLP, END), PRODE));
-    //test adding empty productions for semicolons
     parse_table.insert(std::make_pair(std::make_pair(EPPP, SEMICOL), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(EP, SEMICOL), PRODE));
     parse_table.insert(std::make_pair(std::make_pair(EPP, SEMICOL), PRODE));
@@ -220,6 +225,11 @@ parser::~parser() {
     //destructor
 }
 
+//is_valid
+//parameters: check_key is the pair of strings to check against the table
+//returns: true/false
+//This method checks the parse table to see if the given pair (a non-terminal and terminal)
+//has a corresponding entry in the table.
 bool parser::is_valid(const std::pair<std::string, std::string>& check_key) const {
     bool valid = false;
 
@@ -230,6 +240,10 @@ bool parser::is_valid(const std::pair<std::string, std::string>& check_key) cons
     return valid;
 }
 
+//prod_to_string
+//parameters: prod (string vector) is the production to convert
+//returns: string
+//This method takes the given production and converts it into a string, with spaces
 std::string parser::prod_to_string(const prod& production) const {
     std::string prod_as_string = "";
 
@@ -241,8 +255,13 @@ std::string parser::prod_to_string(const prod& production) const {
     return prod_as_string;
 }
 
+//initialize_parse
+//parameters: none
+//returns: none
+//This method prepares the parsing stack for parsing.
+//It essentially empties the stack, and then pushes the end symbol and start symbol
 void parser::initialize_parse() {
-    std::cerr << "Prepping parsing stack...";
+    //std::cerr << "Prepping parsing stack...";
     if (!parsing_stack.empty()) {
         while (!parsing_stack.empty()) {
             parsing_stack.pop();
@@ -250,9 +269,15 @@ void parser::initialize_parse() {
     }
     parsing_stack.push(END);
     parsing_stack.push(RAT18S);
-    std::cerr << "Done" << std::endl;
+    //std::cerr << "Done" << std::endl;
 }
 
+//parse
+//parameters:rat18s_lex is a lexer object, which will need tokens for this method to work,
+//           db_output_dest is an ostream to output any debug data (such as productions used)
+//returns: true/false (success flag)
+//This method will loop over the parsing process, as long as there are no errors, there are tokens
+//and the stack has not reached the end symbol
 bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
     std::cerr << "Beginning parse..." << std::endl;
     token curr_tok;
@@ -269,38 +294,50 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
         else {
             in_symbol = curr_tok.lexeme;
         }
-        std::cerr << "Stack top before derive: " << parsing_stack.top() << std::endl;
+        //std::cerr << "Stack top before derive: " << parsing_stack.top() << std::endl;
         this->derive_next(curr_tok, in_symbol, db_output_dest, good_parse);
     }
-    std::cerr << "Parse complete" << std::endl;
+    if (good_parse) {
+        std::cerr << "Parse complete" << std::endl;
+        db_output_dest << "Parse complete" << std::endl;
+    }
+    else {
+        std::cerr << "Parse failed." << std::endl;
+        db_output_dest << "Parse failed." << std::endl;
+    }
 
     return good_parse;
 }
 
-//TODO: Add epsilon transition handling
+//derive_next
+//parameters: in_sym is a token currently in the input, curr_sym is the string version of the token to use
+//            when checking the parse table, db_output_dest is an ostream for debug output, and good_parse
+//            is a flag which will be set to false if any errors are encountered
+//returns: none
+//This function will perform derivations based on the parse table, the input, and the parsing stack
 void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::ostream& db_output_dest, bool& good_parse) {
-    std::cerr << "Performing derivation..." << std::endl;
-    std::cerr << "Input symbol for derivation: " << curr_sym << std::endl;
+    //std::cerr << "Performing derivation..." << std::endl;
+    //std::cerr << "Input symbol for derivation: " << curr_sym << std::endl;
     prod next_prod;
     int prod_end;
 
     if (this->is_valid(std::make_pair(parsing_stack.top(), curr_sym))) {
-        std::cerr << "Found entry in table for stack symbol and input symbol pair." << std::endl;
+        //std::cerr << "Found entry in table for stack symbol and input symbol pair." << std::endl;
         do {
-            std::cerr << "Beginning application of productions..." << std::endl;
-            std::cerr << "Current stack top: " << parsing_stack.top() << std::endl;
+            //std::cerr << "Beginning application of productions..." << std::endl;
+            //std::cerr << "Current stack top: " << parsing_stack.top() << std::endl;
             db_output_dest << parsing_stack.top() << " -> ";
             next_prod = parse_table[std::make_pair(parsing_stack.top(), curr_sym)];
             parsing_stack.pop();
             //std::cerr << "Production retrieved is: " << next_prod.size() << " symbols." << std::endl;
             prod_end = next_prod.size() - 1;
             if (next_prod[prod_end] != empty) {
-                std::cerr << "Applying production to parsing stack...";
+                //std::cerr << "Applying production to parsing stack...";
                 db_output_dest << this->prod_to_string(next_prod) << std::endl;
                 for (int i = prod_end; i >= 0; i--) {
                     parsing_stack.push(next_prod[i]);
                 }
-                std::cerr << "Done" << std::endl;
+                //std::cerr << "Done" << std::endl;
             }
             else {
                 db_output_dest << this->prod_to_string(next_prod) << std::endl;
@@ -340,5 +377,5 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::
                        << std::endl;
         good_parse = false;
     }
-    std::cerr << "Stack top after derive: " << parsing_stack.top() << std::endl;
+    //std::cerr << "Stack top after derive: " << parsing_stack.top() << std::endl;
 }
