@@ -353,10 +353,16 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::
             std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
                            << "' at line " << in_sym.line_number
                            << std::endl;
+            db_output_dest << "Syntax error: unexpected token '" << in_sym.lexeme 
+                           << "' at line " << in_sym.line_number
+                           << std::endl;
             good_parse = false;
         }
         else {
             std::cerr << "Unexpected fail state while processing: '" << in_sym.lexeme
+                           << "' at line " << in_sym.line_number
+                           << ", check parser source code" << std::endl;
+            db_output_dest << "Unexpected fail state while processing: '" << in_sym.lexeme
                            << "' at line " << in_sym.line_number
                            << ", check parser source code" << std::endl;
             good_parse = false;
@@ -369,6 +375,9 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::
     else {
         std::cerr << "Could not find symbol pair...fail state set." << std::endl;
         std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
+                       << "' at line " << in_sym.line_number
+                       << std::endl;
+        db_output_dest << "Syntax error: unexpected token '" << in_sym.lexeme 
                        << "' at line " << in_sym.line_number
                        << std::endl;
         good_parse = false;
