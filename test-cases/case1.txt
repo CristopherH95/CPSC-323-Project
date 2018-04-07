@@ -1,10 +1,10 @@
-function print$ [data:int]
+function plus1$ [data:int]
 {
-	put(data);
+	return data + 1;
 }
 
 %%
 
  int data;
  get(data);
- print$(data);
+ put(plus1$(data));
