@@ -284,7 +284,7 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
     std::string in_symbol;
     bool good_parse = true;
 
-    while (parsing_stack.top() != END && good_parse && rat18s_lex.exist_tokens()) {
+    while (good_parse && rat18s_lex.exist_tokens()) {
         curr_tok = rat18s_lex.next_token();
         db_output_dest << "Token: " << curr_tok.type << " Lexeme: " << curr_tok.lexeme << std::endl;
 
@@ -343,8 +343,7 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::
                 db_output_dest << this->prod_to_string(next_prod) << std::endl;
             }
         }while (this->is_valid(std::make_pair(parsing_stack.top(), curr_sym)) && 
-                curr_sym != parsing_stack.top() &&
-                parsing_stack.top() != END);
+                curr_sym != parsing_stack.top());
         
         if (curr_sym == parsing_stack.top()) {
             //db_output_dest << in_sym.type << " -> " << in_sym.lexeme << std::endl;
@@ -355,9 +354,6 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym, std::
                            << "' at line " << in_sym.line_number
                            << std::endl;
             good_parse = false;
-        }
-        else if (parsing_stack.top() == END) {
-            db_output_dest << "END SYMBOL REACHED" << std::endl;
         }
         else {
             std::cerr << "Unexpected fail state while processing: '" << in_sym.lexeme

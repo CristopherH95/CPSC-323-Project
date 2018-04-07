@@ -16,8 +16,17 @@ const std::deque<token>& lexer::get_tokens() const {
     return p_tokens;
 }
 
+//check_tokens (overload)
+//parameters: output_dest is a ostream destination for debug output
+//returns: true/false (whether tokens contained errors or not)
+//This function will remove all comment tokens, check for error tokens, and
+//add an END symbol for the parser
 bool lexer::check_tokens(std::ostream& output_dest) {
     bool good_check = true;
+    token end_mark;
+    end_mark.lexeme = "$";
+    end_mark.type = "END";
+    end_mark.line_number = 0;
 
     for (std::deque<token>::iterator it = p_tokens.begin(); it != p_tokens.end();) {
         if (it->type == com_tok) {
@@ -33,12 +42,24 @@ bool lexer::check_tokens(std::ostream& output_dest) {
             ++it;
         }
     }
+    if (good_check) {
+        p_tokens.push_back(end_mark);
+    }
 
     return good_check;
 }
 
+//check_tokens
+//parameters: none
+//returns: true/false (whether tokens contained errors or not)
+//This function will remove all comment tokens, check for error tokens, and
+//add an END symbol for the parser
 bool lexer::check_tokens() {
     bool good_check = true;
+    token end_mark;
+    end_mark.lexeme = "$";
+    end_mark.type = "END";
+    end_mark.line_number = 0;
 
     for (std::deque<token>::iterator it = p_tokens.begin(); it != p_tokens.end();) {
         if (it->type == com_tok) {
@@ -53,6 +74,9 @@ bool lexer::check_tokens() {
         else {
             ++it;
         }
+    }
+    if (good_check) {
+        p_tokens.push_back(end_mark);
     }
 
     return good_check;
