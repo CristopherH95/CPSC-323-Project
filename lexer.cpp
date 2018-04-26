@@ -17,7 +17,7 @@ const std::deque<token>& lexer::get_tokens() const {
 }
 
 //check_tokens (overload)
-//parameters: output_dest is a ostream destination for debug output
+//parameters: output_dest is a ostream destination for debug output, err_strm_output decides whether to also output to cerr
 //returns: true/false (whether tokens contained errors or not)
 //This function will remove all comment tokens, check for error tokens, and
 //add an END symbol for the parser
