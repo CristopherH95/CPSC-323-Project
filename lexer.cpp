@@ -21,7 +21,7 @@ const std::deque<token>& lexer::get_tokens() const {
 //returns: true/false (whether tokens contained errors or not)
 //This function will remove all comment tokens, check for error tokens, and
 //add an END symbol for the parser
-bool lexer::check_tokens(std::ostream& output_dest) {
+bool lexer::check_tokens(std::ostream& output_dest, bool err_strm_output) {
     bool good_check = true;
     token end_mark;
     end_mark.lexeme = "$";
@@ -35,8 +35,10 @@ bool lexer::check_tokens(std::ostream& output_dest) {
         else if (it->type == err_tok) {
             output_dest << "Error invalid token: '" << it->lexeme
                         << "' on line " << it->line_number << std::endl;
-            std::cerr << "Error invalid token: '" << it->lexeme
-                        << "' on line " << it->line_number << std::endl;
+            if (err_strm_output) {
+                std::cerr << "Error invalid token: '" << it->lexeme
+                            << "' on line " << it->line_number << std::endl;
+            }
             good_check = false;
             ++it;
         }
