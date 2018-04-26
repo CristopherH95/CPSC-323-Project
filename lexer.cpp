@@ -35,6 +35,8 @@ bool lexer::check_tokens(std::ostream& output_dest) {
         else if (it->type == err_tok) {
             output_dest << "Error invalid token: '" << it->lexeme
                         << "' on line " << it->line_number << std::endl;
+            std::cerr << "Error invalid token: '" << it->lexeme
+                        << "' on line " << it->line_number << std::endl;
             good_check = false;
             ++it;
         }
@@ -205,7 +207,7 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
         check = "";
         check += word[i];
 
-        if ((is_seperator(check) || word[i] == rat18s_cmt_symbol) && found_sep && word.size() <= i + 1) {
+        if ((is_seperator(check) || word[i] == rat18s_cmt_symbol || is_operator(check)) && found_sep && word.size() <= i + 1) {
             //std::cerr << "condition 1" << std::endl;
             //std::cerr << word.substr(pos, count_no_sep) << std::endl;
             if (!word.substr(pos, count_no_sep).empty()) {
@@ -215,7 +217,7 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
             //std::cerr << check << std::endl;
             words.push_back(check);
         }
-        else if ((is_seperator(check) || word[i] == rat18s_cmt_symbol) && !found_sep && word.size() <= i + 1) {
+        else if ((is_seperator(check) || word[i] == rat18s_cmt_symbol || is_operator(check)) && !found_sep && word.size() <= i + 1) {
             //std::cerr << "condition 2" << std::endl;
             //std::cerr << word.substr(pos, count_no_sep) << std::endl;
             if (!word.substr(pos, count_no_sep).empty()) {
@@ -224,7 +226,7 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
             //std::cerr << word.substr(word.size() - 1, 1) << std::endl;
             words.push_back(word.substr(word.size() - 1, 1));
         }
-        else if (!(is_seperator(check) || word[i] == rat18s_cmt_symbol) && found_sep && word.size() <= i + 1) {
+        else if (!(is_seperator(check) || word[i] == rat18s_cmt_symbol || is_operator(check)) && found_sep && word.size() <= i + 1) {
             count_no_sep++;
             //std::cerr << "condition 3" << std::endl;
             //std::cerr << word.substr(pos, count_no_sep) << std::endl;
@@ -232,7 +234,7 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
                 words.push_back(word.substr(pos, count_no_sep));
             }
         }
-        else if ((is_seperator(check) || word[i] == rat18s_cmt_symbol) && !found_sep) {
+        else if ((is_seperator(check) || word[i] == rat18s_cmt_symbol || is_operator(check)) && !found_sep) {
             //std::cerr << "condition 4" << std::endl;
             if (i > 0 && pos == 0) {
                 //std::cerr << word.substr(pos, i) << std::endl;
@@ -245,11 +247,11 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
             pos = i + 1;
             count_no_sep = 0;
         }
-        else if (found_sep && !(is_seperator(check) || word[i] == rat18s_cmt_symbol)) {
+        else if (found_sep && !(is_seperator(check) || word[i] == rat18s_cmt_symbol || is_operator(check))) {
             //std::cerr << "condition 5" << std::endl;
             count_no_sep++;
         }
-        else if (found_sep && (is_seperator(check) || word[i] == rat18s_cmt_symbol)) {
+        else if (found_sep && (is_seperator(check) || word[i] == rat18s_cmt_symbol || is_operator(check))) {
             //std::cerr << "condition 6" << std::endl;
             //std::cerr << word.substr(pos, count_no_sep) << std::endl;
             if (!word.substr(pos, count_no_sep).empty()) {
@@ -258,7 +260,7 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
             found_sep = false;
             i--;
         }
-        else if (!found_sep && !(is_seperator(check) || word[i] == rat18s_cmt_symbol)) {
+        else if (!found_sep && !(is_seperator(check) || word[i] == rat18s_cmt_symbol || is_operator(check))) {
             //std::cerr << "condition 7" << std::endl;
             count_no_sep++;
         }

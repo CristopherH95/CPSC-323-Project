@@ -26,10 +26,10 @@ int main(int argc, char** argv) {
         cout << "Saving syntax analysis output to file: " << target_file << endl;
         input_file.open(file_to_process);
         rat18s_lex.process_file(input_file);
+        output_file.open(target_file);
         good = rat18s_lex.check_tokens(output_file);
         if (good) {
             rat18s_par.initialize_parse();
-            output_file.open(target_file);
             good = rat18s_par.parse(rat18s_lex, output_file);
         }
         output_file.close();
