@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
         good = rat18s_sem.exec_semantics(rat18s_par.get_semantics());
         if (good) {
             rat18s_sem.print_instructions(output_file, false);
-            output_file << endl << endl;
+            output_file << endl << "SYMBOL TABLE" << endl;
             rat18s_sem.print_table(output_file, false);
         }
         output_file.close();

@@ -9,7 +9,7 @@ else
 endif
 
 rat18s_compiler : main.cpp lexer.cpp lexer.h parser.cpp parser.h 
-	g++ -std=c++11 main.cpp lexer.cpp parser.cpp -o compiler
+	g++ -std=c++11 main.cpp lexer.cpp parser.cpp semantics.cpp -o compiler
 
 clean : 
 	$(RM) $(FILE)
