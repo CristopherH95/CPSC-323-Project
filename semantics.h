@@ -28,6 +28,7 @@ class semantic {
         semantic();
         ~semantic();
         bool exists_symbol(const std::string& sym_to_check);
+        symbol get_symbol(const std::string& sym_to_get);
         bool add_symbol(const std::string& sym_to_add, const std::string& sym_type);
         void exec_semantics(const std::list<std::string>& semant);
         void gen_instr(const std::string& oper, const std::string& op_arg);

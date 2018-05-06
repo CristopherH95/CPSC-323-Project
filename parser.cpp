@@ -362,15 +362,33 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
                 semantics_list.push_back(check_semantics);
                 if (check_semantics == PUSH_INT_INSTR || check_semantics == GET_ADDR ||
                      check_semantics == ADD_SYM_TABLE) {
+                    //std::cerr << "PUSH_INT GET_ADDR ADD_SYM IF" << std::endl;
+                    //std::cerr << "LEXEME: " << in_sym.lexeme << std::endl;
                     parsing_stack.pop();
                     if (parsing_stack.top() == USE_SAVED) {
+                        //std::cerr << "USE_SAVED" << std::endl;
                         semantics_list.push_back(semantic_token.lexeme);
                     }
                     else if (parsing_stack.top() == USE_VAR) {
+                        //std::cerr << "USE_VAR" << std::endl;
                         semantics_list.push_back(semantic_var.lexeme);
                     }
                     else {
-                        semantics_list.push_back(in_sym.lexeme);
+                        //std::cerr << "ELSE" << std::endl;
+                        if (in_sym.lexeme != LIT_TRUE && in_sym.lexeme != LIT_FALSE) {
+                            //std::cerr << "NOT TRUE/FALSE" << std::endl;
+                            semantics_list.push_back(in_sym.lexeme);
+                        }
+                        else {
+                            if (in_sym.lexeme == LIT_TRUE) {
+                                //std::cerr << "TRUE" << std::endl;
+                                semantics_list.push_back(std::to_string(1));
+                            }
+                            else if (in_sym.lexeme == LIT_FALSE) {
+                                //std::cerr << "FALSE" << std::endl;
+                                semantics_list.push_back(std::to_string(0));
+                            }
+                        }
                     }
                 }
                 else if (check_semantics == SAVE_TOK) {

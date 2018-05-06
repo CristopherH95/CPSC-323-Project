@@ -14,6 +14,8 @@
 const std::string NIL = "";
 const std::string GEN_INSTR = "geninstr";
 const std::string SAVE_ADDR = "saveaddr";
+const std::string SAVE_ELSE_MARK = "saveelseaddr";
+const std::string ELSE_JUMP = "jumpelse";
 const std::string GET_ADDR = "getaddr";
 const std::string PUSH_JUMP = "pushjmp";
 const std::string BCK_PTCH = "backpatch";
@@ -42,7 +44,9 @@ const std::string SAVE_TOK = "save";
 const std::string USE_SAVED = "reversetok";
 const std::string USE_VAR = "reversevar";
 const std::string CHK_COND = "checkcdop";
+const std::string PREP_STDIN = "expectinput";
 
+//set to check if symbol in parsing stack is for semantics
 const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_ADDR, PUSH_JUMP,
                                                 BCK_PTCH, PUSH_INT_INSTR, PUSH_MEM_INSTR,
                                                 POP_MEM_INSTR, STD_OUT_INSTR, STD_IN_INSTR,
@@ -50,7 +54,8 @@ const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_A
                                                 GRT_INSTR, LES_INSTR, EQU_INSTR, NEQ_INSTR, 
                                                 GEQ_INSTR, LEQ_INSTR, JMPZ_INSTR, JMP_INSTR, 
                                                 LBL_INSTR, ADD_SYM_TABLE, CHK_SYM_TABLE,
-                                                SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR};
+                                                SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR,
+                                                SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN};
 
 //Non-terminal symbols
 const std::string RAT18S = "<RAT18S>"; 
@@ -167,13 +172,12 @@ const prod PROD22 = { A };
 const prod PROD23 = { IF };
 const prod PROD24 = { RET };
 const prod PROD25 = { PR, GEN_INSTR, STD_OUT_INSTR, NIL };
-const prod PROD26 = { SC, GEN_INSTR, STD_IN_INSTR, NIL, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_VAR };
+const prod PROD26 = { PREP_STDIN, SC, GEN_INSTR, STD_IN_INSTR, NIL, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_VAR };
 const prod PROD27 = { WH };
 const prod PROD28 = { LCURL, SL, RCURL };
-//this production may need work to ensure correctness
 const prod PROD29 = { SAVE_TOK, ABS_IDENTIFIER, EQ, E, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_SAVED, SEMICOL };
 const prod PROD30 = { SAVE_ADDR, LIT_IF, LPARAN, COND, RPARAN, S, BCK_PTCH, IFP };
-const prod PROD31 = { LIT_ELSE, S, LIT_ENDIF };
+const prod PROD31 = { SAVE_ELSE_MARK, LIT_ELSE, S, ELSE_JUMP, LIT_ENDIF };
 const prod PROD32 = { LIT_ENDIF };
 const prod PROD33 = { LIT_RET, RETP };
 const prod PROD34 = { SEMICOL };
@@ -188,18 +192,11 @@ const prod PROD42 = { SAVE_TOK, GREATER_THAN };
 const prod PROD43 = { SAVE_TOK, LESS_THAN };
 const prod PROD44 = { SAVE_TOK, GREATER_OR_EQ };
 const prod PROD45 = { SAVE_TOK, LESS_OR_EQ };
-/*
-const prod PROD40 = { GEN_INSTR, EQU_INSTR, NIL, PUSH_JUMP, GEN_INSTR, JMPZ_INSTR, NIL, EQEQ };
-const prod PROD41 = { GEN_INSTR, NEQ_INSTR, NIL, PUSH_JUMP, GEN_INSTR, JMPZ_INSTR, NIL, NEQ };
-const prod PROD42 = { GEN_INSTR, GRT_INSTR, NIL, PUSH_JUMP, GEN_INSTR, JMPZ_INSTR, NIL, GREATER_THAN };
-const prod PROD43 = { GEN_INSTR, LES_INSTR, NIL, PUSH_JUMP, GEN_INSTR, JMPZ_INSTR, NIL, LESS_THAN };
-const prod PROD44 = { GEN_INSTR, GEQ_INSTR, NIL, PUSH_JUMP, GEN_INSTR, JMPZ_INSTR, NIL, GREATER_OR_EQ };
-const prod PROD45 = { GEN_INSTR, LEQ_INSTR, NIL, PUSH_JUMP, GEN_INSTR, JMPZ_INSTR, NIL, LESS_OR_EQ };*/
 const prod PROD46 = { T, EPPP };
 const prod PROD47 = { EP };
 const prod PROD48 = { EPP };
 const prod PROD49 = { PLUS_SYM, T, GEN_INSTR, ADD_INSTR, NIL, EP };
-const prod PROD50 = { MINUS_SYM, T, EPP };
+const prod PROD50 = { MINUS_SYM, T, GEN_INSTR, SUB_INSTR, NIL, EPP };
 const prod PROD51 = { FCTR, TPPP };
 const prod PROD52 = { TP };
 const prod PROD53 = { TPP };
@@ -211,8 +208,8 @@ const prod PROD58 = { CHK_SYM_TABLE, GEN_INSTR, PUSH_MEM_INSTR, GET_ADDR, ABS_ID
 const prod PROD59 = { GEN_INSTR, PUSH_INT_INSTR, ABS_INTEGER };
 const prod PROD60 = { LPARAN, E, RPARAN };
 const prod PROD61 = { ABS_REAL };
-const prod PROD62 = { LIT_TRUE };
-const prod PROD63 = { LIT_FALSE };
+const prod PROD62 = { GEN_INSTR, PUSH_INT_INSTR, LIT_TRUE };
+const prod PROD63 = { GEN_INSTR, PUSH_INT_INSTR, LIT_FALSE };
 const prod PROD64 = { LPARAN, IDS, RPARAN }; 
 
 class parser {

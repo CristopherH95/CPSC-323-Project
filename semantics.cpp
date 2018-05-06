@@ -19,6 +19,14 @@ bool semantic::exists_symbol(const std::string& sym_to_check) {
     return found;
 }
 
+symbol semantic::get_symbol(const std::string& sym_to_get) {
+    symbol temp_sym;
+
+    temp_sym = sym_table[sym_to_get];
+
+    return temp_sym;
+}
+
 bool semantic::add_symbol(const std::string& sym_to_add, const std::string& sym_type) {
     bool success = false;
     memory_counter++;
@@ -27,15 +35,15 @@ bool semantic::add_symbol(const std::string& sym_to_add, const std::string& sym_
     n_sym.type = sym_type;
     n_sym.loc = memory_counter;
 
-    std::cerr << "SYM_TO_ADD: " << sym_to_add << std::endl;
-    std::cerr << "SYM_TYPE: " << sym_type << std::endl;
+    //std::cerr << "SYM_TO_ADD: " << sym_to_add << std::endl;
+    //std::cerr << "SYM_TYPE: " << sym_type << std::endl;
 
     sym_table.insert(std::make_pair(sym_to_add, n_sym));
     if (this->exists_symbol(sym_to_add)) {
         success = true;
     }
     else {
-        std::cerr << "SYMBOL NOT FOUND IN TABLE AFTER CREATION" << std::endl;
+        //std::cerr << "SYMBOL NOT FOUND IN TABLE AFTER CREATION" << std::endl;
         memory_counter--;
     }
 
@@ -142,8 +150,8 @@ void semantic::gen_instr(const std::string& oper, const std::string& op_arg) {
     instr n_instruct;
     n_instruct.addr = last_instr_loc;
     n_instruct.oper = oper;
-    std::cerr << "OPERAND: " << oper << std::endl;
-    std::cerr << "OPERAND_ARG: " << op_arg << std::endl;
+    //std::cerr << "OPERAND: " << oper << std::endl;
+    //std::cerr << "OPERAND_ARG: " << op_arg << std::endl;
     n_instruct.oprnd = op_arg;
     instructions.push_back(n_instruct);
     last_instr_loc++;
@@ -165,16 +173,22 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
     bool n_symbol = false;
     bool n_symbol_type = false;
     bool chk_symbol = false;
+    bool saved_addr = false;
+    bool expect_input = false;
     std::string temp_var_type = "";
     std::string temp_str = "";
     std::string oper = "";
     std::string op_arg = "";
     std::string addr = "";
+    std::string addr_else = "";
+    std::string else_jump_back_patch = "";
+    std::string else_jump = "";
+    unsigned int iter_addr;
     symbol temp_sym;
 
     for (std::string i : semant) {
-        std::cerr << "SEMANTIC COMMAND: " << i << std::endl;
-        if (i == "addtable") {
+        //std::cerr << "SEMANTIC COMMAND: " << i << std::endl;
+        if (i == "addtable" && !expect_input) {
             n_symbol = true;
             n_symbol_type = true;
             continue;
@@ -190,6 +204,13 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
         }
         if (i == "saveaddr") {
             addr = std::to_string(last_instr_loc);
+            saved_addr = true;
+            continue;
+        }
+        if (i == "saveelseaddr") {
+            addr_else = std::to_string(last_instr_loc);
+            this->gen_instr("JUMP", "");
+            this->gen_instr("LABEL", "");
             continue;
         }
         if (i == "getaddr") {
@@ -198,25 +219,54 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
         }
         if (i == "pushjmp") {
             jmp_stack.push(std::to_string(last_instr_loc));
+            else_jump = std::to_string(last_instr_loc);
             continue;
         }
         if (i == "backpatch") {
             this->back_patch(std::to_string(last_instr_loc));
+            else_jump_back_patch = std::to_string(last_instr_loc);
             continue;
+        }
+        if (i == "expectinput") {
+            expect_input = true;
+            continue;
+        }
+        if (expect_input && get_address) {
+            if (!this->exists_symbol(i)) {
+                std::cerr << "Error: variable '" << i << "' was used before it was declared." << std::endl;
+                break;
+            }
+            expect_input = false;
+            get_address = false;
+        }
+        if (i == "jumpelse") {
+            jmp_stack.push(addr_else);
+            this->back_patch(std::to_string(last_instr_loc));
+            iter_addr = std::stoi(else_jump_back_patch);
+            iter_addr++;
+            jmp_stack.push(else_jump);
+            this->back_patch(std::to_string(iter_addr));
         }
         if (n_symbol && n_symbol_type) {
             temp_var_type = i;
-            std::cerr << "TYPE: " << temp_var_type << std::endl;
+            //std::cerr << "TYPE: " << temp_var_type << std::endl;
             n_symbol_type = false;
         }
         if (n_symbol && get_address && !n_symbol_type) {
-            std::cerr << "VAR NAME: " << i << std::endl;
+            //std::cerr << "VAR NAME: " << i << std::endl;
+            if (this->exists_symbol(i)) {
+                std::cerr << "Error: attempting to declare variable '" << i << "' which has already been declared." << std::endl;
+                break;
+            }
             if (!this->add_symbol(i, temp_var_type)) {
-                std::cerr << "Failed to create variable: '" << i << "' in the symbol table, variable may have"
-                          << " been previously declared." << std::endl;
+                std::cerr << "Failed to create variable: '" << i << "' in the symbol table, is there enough memory remaining" 
+                          << " for the variable?" << std::endl;
                 break;
             }
             else {
+                //default value
+                this->gen_instr("PUSHI", "0");
+                this->gen_instr("POPM", std::to_string(this->get_symbol(i).loc));
                 get_address = false;
                 n_symbol = false;
                 continue;
@@ -228,8 +278,14 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
                 perf_jmp = true;
             }
             check_oper = false;
-            check_op_arg = true;
-            continue;
+            if (saved_addr && perf_jmp) {
+                check_op_arg = false;
+                end_args = true;
+            }
+            else {
+                check_op_arg = true;
+            }
+            //continue;
         }
         else if (exec_gen_instr && check_op_arg && !get_address) {
             op_arg = i;
@@ -255,13 +311,13 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
             end_args = false;
             exec_gen_instr = false;
         }
-        else if (exec_gen_instr && end_args && perf_jmp) {
+        else if (exec_gen_instr && end_args && perf_jmp && saved_addr) {
             this->gen_instr(oper, addr);
             end_args = false;
             exec_gen_instr = false;
             perf_jmp = false;
+            saved_addr = false;
         }
-        this->print_table();
     }
     this->gen_instr("", "");    //this is to eliminate issue where jumps can sometimes be written to the 
                                 //non-existant last line of the program
