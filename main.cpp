@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
         file_to_process = string(argv[1]);
         target_file = string(argv[2]);
         cout << "Processing file: " << file_to_process << endl;
-        cout << "Saving syntax analysis output to file: " << target_file << endl;
+        cout << "Saving compilation output to file: " << target_file << endl;
         input_file.open(file_to_process);
         rat18s_lex.process_file(input_file);
         output_file.open(target_file);
