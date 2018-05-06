@@ -9,6 +9,11 @@ semantic::~semantic() {
     //destructor
 }
 
+//exists_symbol
+//parameters: sym_to_check is a string representing the identifier to check in the symbol table
+//returns: true/false
+//This method will determine whether a given string is a previously declared identifier
+//in the symbol table
 bool semantic::exists_symbol(const std::string& sym_to_check) {
     bool found = false;
 
@@ -19,6 +24,10 @@ bool semantic::exists_symbol(const std::string& sym_to_check) {
     return found;
 }
 
+//get_symbol
+//parameters: sym_to_get is a string representing the identifier to get from the symbol table
+//returns: symbol (struct)
+//This method will get the identifier corresponding to the given symbol in the symbol table
 symbol semantic::get_symbol(const std::string& sym_to_get) {
     symbol temp_sym;
 
@@ -27,6 +36,12 @@ symbol semantic::get_symbol(const std::string& sym_to_get) {
     return temp_sym;
 }
 
+//add_symbol
+//parameters: sym_to_add is a string representing the name of the symbol,
+//            sym_type is a string representing the type of the new symbol
+//returns: true/false (successfully added or not)
+//This method adds a new symbol to the symbol table, with the given type and memory location
+//derived from the internal memory counter
 bool semantic::add_symbol(const std::string& sym_to_add, const std::string& sym_type) {
     bool success = false;
     memory_counter++;
@@ -50,10 +65,19 @@ bool semantic::add_symbol(const std::string& sym_to_add, const std::string& sym_
     return success;
 }
 
+//compare_symbols
+//parameters: a and b are symbols to compare to each other
+//returns: true/false
+//This function is a helper function for sorting symbols
 bool compare_symbols(const symbol& a, const symbol& b) {
     return a.loc < b.loc;
 }
 
+//print_table
+//parameters: output_dest is an output stream to output to, err_out is a boolean value
+//            which determines whether to also output to the error stream (default is yes)
+//returns: none
+//This method will print the symbol table to the given output stream
 void semantic::print_table(std::ostream& output_dest, bool err_out) {
     typedef std::map<std::string, symbol> table_data;
     std::vector<symbol> print_container;
@@ -91,6 +115,10 @@ void semantic::print_table(std::ostream& output_dest, bool err_out) {
     }
 }
 
+//print_table (overload)
+//parameters: none
+//returns: none
+//This method overload will print the symbol table only to the error stream
 void semantic::print_table() {
     typedef std::map<std::string, symbol> table_data;
     std::vector<symbol> print_container;
@@ -114,6 +142,11 @@ void semantic::print_table() {
     }
 }
 
+//print_instructions
+//parameters: output_dest is an output stream to print the instructions to, err_out is a boolean
+//            value determining whether to also print to the error stream (default is yes)
+//returns: none
+//This method will print the currently created instructions to the given output stream
 void semantic::print_instructions(std::ostream& output_dest, bool err_out) {
     output_dest << std::setfill('-') << std::setw(20) << "";
     output_dest << "INSTRUCTIONS";
@@ -139,6 +172,10 @@ void semantic::print_instructions(std::ostream& output_dest, bool err_out) {
     }
 }
 
+//pop_jmp_stack
+//parameters: none
+//returns: none
+//This method pops from the jump stack and returns the value it popped
 unsigned int semantic::pop_jmp_stack() {
     unsigned int temp = std::stoi(jmp_stack.top());
     jmp_stack.pop();
@@ -146,6 +183,10 @@ unsigned int semantic::pop_jmp_stack() {
     return temp;
 }
 
+//gen_instr
+//parameters: oper is the operator to generate, op_arg is the argument for the operator
+//returns: none
+//This method will create an instruction based on the given operator and its argument
 void semantic::gen_instr(const std::string& oper, const std::string& op_arg) {
     instr n_instruct;
     n_instruct.addr = last_instr_loc;
@@ -157,13 +198,21 @@ void semantic::gen_instr(const std::string& oper, const std::string& op_arg) {
     last_instr_loc++;
 }
 
+//back_patch
+//parameters: jmp_addr is the value to change the previous jump argument to
+//returns: none
+//This method can be used to change a jump instruction's argument later on
 void semantic::back_patch(const std::string& jmp_addr) {
     unsigned int temp_addr = this->pop_jmp_stack();
     instructions[temp_addr - 1].oprnd = jmp_addr;
 }
 
-void semantic::exec_semantics(const std::list<std::string>& semant) {
-    typedef std::list<std::string> semant_list;
+//exec_semantics
+//parameters: semant is a list of strings representing semantic instructions
+//returns: true/false (no errors/error found)
+//This method will go through the semantic instructions and generate object code
+bool semantic::exec_semantics(const std::list<std::string>& semant) {
+    bool success = true;
     bool end_args = false;
     bool check_oper = false;
     bool check_op_arg = false;
@@ -175,6 +224,7 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
     bool chk_symbol = false;
     bool saved_addr = false;
     bool expect_input = false;
+    bool check_int_type = false;
     std::string temp_var_type = "";
     std::string temp_str = "";
     std::string oper = "";
@@ -231,9 +281,14 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
             expect_input = true;
             continue;
         }
+        if (i == "checkisint") {
+            check_int_type = true;
+            continue;
+        }
         if (expect_input && get_address) {
             if (!this->exists_symbol(i)) {
                 std::cerr << "Error: variable '" << i << "' was used before it was declared." << std::endl;
+                success = false;
                 break;
             }
             expect_input = false;
@@ -256,11 +311,13 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
             //std::cerr << "VAR NAME: " << i << std::endl;
             if (this->exists_symbol(i)) {
                 std::cerr << "Error: attempting to declare variable '" << i << "' which has already been declared." << std::endl;
+                success = false;
                 break;
             }
             if (!this->add_symbol(i, temp_var_type)) {
                 std::cerr << "Failed to create variable: '" << i << "' in the symbol table, is there enough memory remaining" 
                           << " for the variable?" << std::endl;
+                success = false;
                 break;
             }
             else {
@@ -296,9 +353,18 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
             if (chk_symbol) {
                 if (!this->exists_symbol(i)) {
                     std::cerr << "Error: variable '" << i << "' was used before it was declared." << std::endl;
+                    success = false;
                     break;
                 }
                 chk_symbol = false;
+            }
+            if (check_int_type) {
+                if (this->get_symbol(i).type != "int") {
+                    std::cerr << "Error: cannot perform arithmetic operations on non-int type." << std::endl;
+                    success = false;
+                    break;
+                }
+                check_int_type = false;
             }
             temp_sym = sym_table[i];
             op_arg = std::to_string(temp_sym.loc);
@@ -321,4 +387,5 @@ void semantic::exec_semantics(const std::list<std::string>& semant) {
     }
     this->gen_instr("", "");    //this is to eliminate issue where jumps can sometimes be written to the 
                                 //non-existant last line of the program
+    return success;
 }

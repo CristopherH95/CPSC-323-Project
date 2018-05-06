@@ -45,6 +45,7 @@ const std::string USE_SAVED = "reversetok";
 const std::string USE_VAR = "reversevar";
 const std::string CHK_COND = "checkcdop";
 const std::string PREP_STDIN = "expectinput";
+const std::string CHK_INT = "checkisint";
 
 //set to check if symbol in parsing stack is for semantics
 const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_ADDR, PUSH_JUMP,
@@ -55,7 +56,7 @@ const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_A
                                                 GEQ_INSTR, LEQ_INSTR, JMPZ_INSTR, JMP_INSTR, 
                                                 LBL_INSTR, ADD_SYM_TABLE, CHK_SYM_TABLE,
                                                 SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR,
-                                                SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN};
+                                                SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN, CHK_INT};
 
 //Non-terminal symbols
 const std::string RAT18S = "<RAT18S>"; 
@@ -161,22 +162,32 @@ const prod PROD11 = { LIT_REAL };
 const prod PROD12 = { LCURL, SL, RCURL };
 const prod PROD13 = { DL };
 const prod PROD14 = { D, SEMICOL, DLP };
+//modded for semantics
 const prod PROD15 = { SAVE_TOK, ADD_SYM_TABLE, LIT_INT, IDS };
+//modded for semantics
 const prod PROD16 = { SAVE_TOK, ADD_SYM_TABLE, LIT_BOOL, IDS };
+//modded for semantics
 const prod PROD17 = { SAVE_TOK, ADD_SYM_TABLE, LIT_REAL, IDS };
+//modded for semantics
 const prod PROD18 = { SAVE_VAR, GET_ADDR, ABS_IDENTIFIER, IDSP };
+//modded for semantics
 const prod PROD19 = { COMM, ADD_SYM_TABLE, USE_SAVED, IDS };
 const prod PROD20 = { S, SLP };
 const prod PROD21 = { CP };
 const prod PROD22 = { A };
 const prod PROD23 = { IF };
 const prod PROD24 = { RET };
+//modded for semantics
 const prod PROD25 = { PR, GEN_INSTR, STD_OUT_INSTR, NIL };
+//modded for semantics
 const prod PROD26 = { PREP_STDIN, SC, GEN_INSTR, STD_IN_INSTR, NIL, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_VAR };
 const prod PROD27 = { WH };
 const prod PROD28 = { LCURL, SL, RCURL };
+//modded for semantics
 const prod PROD29 = { SAVE_TOK, ABS_IDENTIFIER, EQ, E, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_SAVED, SEMICOL };
+//modded for semantics
 const prod PROD30 = { SAVE_ADDR, LIT_IF, LPARAN, COND, RPARAN, S, BCK_PTCH, IFP };
+//modded for semantics
 const prod PROD31 = { SAVE_ELSE_MARK, LIT_ELSE, S, ELSE_JUMP, LIT_ENDIF };
 const prod PROD32 = { LIT_ENDIF };
 const prod PROD33 = { LIT_RET, RETP };
@@ -184,31 +195,47 @@ const prod PROD34 = { SEMICOL };
 const prod PROD35 = { E, SEMICOL };
 const prod PROD36 = { LIT_PUT, LPARAN, E, RPARAN, SEMICOL };
 const prod PROD37 = { LIT_GET, LPARAN, IDS, RPARAN, SEMICOL };
+//modded for semantics
 const prod PROD38 = { SAVE_ADDR, GEN_INSTR, LBL_INSTR, NIL, LIT_WH, LPARAN, COND, RPARAN, S, GEN_INSTR, JMP_INSTR, BCK_PTCH };
+//modded for semantics
 const prod PROD39 = { E, RE, E, CHK_COND };
+//modded for semantics
 const prod PROD40 = { SAVE_TOK, EQEQ };
+//modded for semantics
 const prod PROD41 = { SAVE_TOK, NEQ };
+//modded for semantics
 const prod PROD42 = { SAVE_TOK, GREATER_THAN };
+//modded for semantics
 const prod PROD43 = { SAVE_TOK, LESS_THAN };
+//modded for semantics
 const prod PROD44 = { SAVE_TOK, GREATER_OR_EQ };
+//modded for semantics
 const prod PROD45 = { SAVE_TOK, LESS_OR_EQ };
 const prod PROD46 = { T, EPPP };
 const prod PROD47 = { EP };
 const prod PROD48 = { EPP };
-const prod PROD49 = { PLUS_SYM, T, GEN_INSTR, ADD_INSTR, NIL, EP };
-const prod PROD50 = { MINUS_SYM, T, GEN_INSTR, SUB_INSTR, NIL, EPP };
+//modded for semantics
+const prod PROD49 = { CHK_INT, PLUS_SYM, T, GEN_INSTR, ADD_INSTR, NIL, EP };
+//modded for semantics
+const prod PROD50 = { CHK_INT, MINUS_SYM, T, GEN_INSTR, SUB_INSTR, NIL, EPP };
 const prod PROD51 = { FCTR, TPPP };
 const prod PROD52 = { TP };
 const prod PROD53 = { TPP };
-const prod PROD54 = { MULT, FCTR, GEN_INSTR, MUL_INSTR, NIL, TP };
-const prod PROD55 = { DIV, FCTR, GEN_INSTR, DIV_INSTR, NIL, TPP };
+//modded for semantics
+const prod PROD54 = { CHK_INT, MULT, FCTR, GEN_INSTR, MUL_INSTR, NIL, TP };
+//modded for semantics
+const prod PROD55 = { CHK_INT, DIV, FCTR, GEN_INSTR, DIV_INSTR, NIL, TPP };
 const prod PROD56 = { MINUS_SYM, PRIM };
 const prod PROD57 = { PRIM };
+//modded for semantics
 const prod PROD58 = { CHK_SYM_TABLE, GEN_INSTR, PUSH_MEM_INSTR, GET_ADDR, ABS_IDENTIFIER, PRIMP };
+//modded for semantics
 const prod PROD59 = { GEN_INSTR, PUSH_INT_INSTR, ABS_INTEGER };
 const prod PROD60 = { LPARAN, E, RPARAN };
 const prod PROD61 = { ABS_REAL };
+//modded for semantics
 const prod PROD62 = { GEN_INSTR, PUSH_INT_INSTR, LIT_TRUE };
+//modded for semantics
 const prod PROD63 = { GEN_INSTR, PUSH_INT_INSTR, LIT_FALSE };
 const prod PROD64 = { LPARAN, IDS, RPARAN }; 
 
@@ -220,8 +247,11 @@ class parser {
         std::string prod_to_string(const prod& production) const;
         void initialize_parse();
         bool parse(lexer& rat18s_lex, std::ostream& db_output_dest, semantic& sem_analyzer);
+        bool parse(lexer& rat18s_lex, semantic& sem_analyzer);
         void derive_next(const token& in_sym, const std::string& curr_sym, 
                          std::ostream& db_output_dest, bool& good_parse, semantic& sem_analyzer);
+        void derive_next(const token& in_sym, const std::string& curr_sym, 
+                         bool& good_parse, semantic& sem_analyzer);
         bool is_semantic_symbol(const std::string& sym) const;
         const std::list<std::string>& get_semantics() const;
         

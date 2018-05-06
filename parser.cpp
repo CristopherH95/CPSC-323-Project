@@ -309,6 +309,38 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest, semantic& se
     return good_parse;
 }
 
+//parse (overload)
+//parameters:rat18s_lex is a lexer object, which will need tokens for this method to work
+//returns: true/false (success flag)
+//This method overload performs the same as the original, but without file output.
+bool parser::parse(lexer& rat18s_lex, semantic& sem_analyzer) {
+    std::cerr << "Beginning parse..." << std::endl;
+    token curr_tok;
+    std::string in_symbol;
+    bool good_parse = true;
+
+    while (good_parse && rat18s_lex.exist_tokens()) {
+        curr_tok = rat18s_lex.next_token();
+
+        if (curr_tok.type == ident_tok || curr_tok.type == integer_tok || curr_tok.type == real_tok) {
+            in_symbol = curr_tok.type;
+        }
+        else {
+            in_symbol = curr_tok.lexeme;
+        }
+        //std::cerr << "Stack top before derive: " << parsing_stack.top() << std::endl;
+        this->derive_next(curr_tok, in_symbol, good_parse, sem_analyzer);
+    }
+    if (good_parse) {
+        std::cerr << "Parse complete" << std::endl;
+    }
+    else {
+        std::cerr << "Parse failed." << std::endl;
+    }
+
+    return good_parse;
+}
+
 //derive_next
 //parameters: in_sym is a token currently in the input, curr_sym is the string version of the token to use
 //            when checking the parse table, db_output_dest is an ostream for debug output, and good_parse
@@ -463,6 +495,148 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
     //std::cerr << "Stack top after derive: " << parsing_stack.top() << std::endl;
 }
 
+//derive_next
+//parameters: in_sym is a token currently in the input, curr_sym is the string version of the token to use
+//            when checking the parse table, and good_parse
+//            is a flag which will be set to false if any errors are encountered
+//returns: none
+//This method overload performs the same as the original, but without file output.
+void parser::derive_next(const token& in_sym, const std::string& curr_sym,
+                         bool& good_parse, semantic& sem_analyzer) {
+    //std::cerr << "Performing derivation..." << std::endl;
+    //std::cerr << "Input symbol for derivation: " << curr_sym << std::endl;
+    prod next_prod;
+    int prod_end;
+    std::string check_semantics;
+
+    if (this->is_valid(std::make_pair(parsing_stack.top(), curr_sym)) || 
+        is_semantic_symbol(parsing_stack.top())) {
+        //std::cerr << "Found entry in table for stack symbol and input symbol pair." << std::endl;
+        do {
+            //std::cerr << "Beginning application of productions..." << std::endl;
+            //std::cerr << "Current stack top: " << parsing_stack.top() << std::endl;
+            if (is_semantic_symbol(parsing_stack.top())) {
+                check_semantics = parsing_stack.top();
+                if (check_semantics == CHK_COND) {
+                    semantics_list.push_back(GEN_INSTR);
+                    if (semantic_token.lexeme == EQEQ) {
+                        semantics_list.push_back(EQU_INSTR);
+                    }
+                    else if (semantic_token.lexeme == NEQ) {
+                        semantics_list.push_back(NEQ_INSTR);
+                    }
+                    else if (semantic_token.lexeme == GREATER_THAN) {
+                        semantics_list.push_back(GRT_INSTR);
+                    }
+                    else if (semantic_token.lexeme == LESS_THAN) {
+                        semantics_list.push_back(LES_INSTR);
+                    }
+                    else if (semantic_token.lexeme == GREATER_OR_EQ) {
+                        semantics_list.push_back(GEQ_INSTR);
+                    }
+                    else if (semantic_token.lexeme == LESS_OR_EQ) {
+                        semantics_list.push_back(LEQ_INSTR);
+                    }
+                    semantics_list.push_back(NIL);
+                    semantics_list.push_back(PUSH_JUMP);
+                    semantics_list.push_back(GEN_INSTR);
+                    semantics_list.push_back(JMPZ_INSTR);
+                    semantics_list.push_back(NIL);
+                    parsing_stack.pop();
+                    continue;
+                }
+                semantics_list.push_back(check_semantics);
+                if (check_semantics == PUSH_INT_INSTR || check_semantics == GET_ADDR ||
+                     check_semantics == ADD_SYM_TABLE) {
+                    //std::cerr << "PUSH_INT GET_ADDR ADD_SYM IF" << std::endl;
+                    //std::cerr << "LEXEME: " << in_sym.lexeme << std::endl;
+                    parsing_stack.pop();
+                    if (parsing_stack.top() == USE_SAVED) {
+                        //std::cerr << "USE_SAVED" << std::endl;
+                        semantics_list.push_back(semantic_token.lexeme);
+                    }
+                    else if (parsing_stack.top() == USE_VAR) {
+                        //std::cerr << "USE_VAR" << std::endl;
+                        semantics_list.push_back(semantic_var.lexeme);
+                    }
+                    else {
+                        //std::cerr << "ELSE" << std::endl;
+                        if (in_sym.lexeme != LIT_TRUE && in_sym.lexeme != LIT_FALSE) {
+                            //std::cerr << "NOT TRUE/FALSE" << std::endl;
+                            semantics_list.push_back(in_sym.lexeme);
+                        }
+                        else {
+                            if (in_sym.lexeme == LIT_TRUE) {
+                                //std::cerr << "TRUE" << std::endl;
+                                semantics_list.push_back(std::to_string(1));
+                            }
+                            else if (in_sym.lexeme == LIT_FALSE) {
+                                //std::cerr << "FALSE" << std::endl;
+                                semantics_list.push_back(std::to_string(0));
+                            }
+                        }
+                    }
+                }
+                else if (check_semantics == SAVE_TOK) {
+                    semantic_token = in_sym;
+                    parsing_stack.pop();
+                }
+                else if (check_semantics == SAVE_VAR) {
+                    semantic_var = in_sym;
+                    parsing_stack.pop();
+                }
+                else {
+                    parsing_stack.pop();
+                }
+                continue;
+            }
+            next_prod = parse_table[std::make_pair(parsing_stack.top(), curr_sym)];
+            parsing_stack.pop();
+            //std::cerr << "Production retrieved is: " << next_prod.size() << " symbols." << std::endl;
+            prod_end = next_prod.size() - 1;
+            if (next_prod[prod_end] != empty) {
+                //std::cerr << "Applying production to parsing stack...";
+                for (int i = prod_end; i >= 0; i--) {
+                    parsing_stack.push(next_prod[i]);
+                }
+                //std::cerr << "Done" << std::endl;
+            }
+        }while ((this->is_valid(std::make_pair(parsing_stack.top(), curr_sym)) && 
+                curr_sym != parsing_stack.top()) || is_semantic_symbol(parsing_stack.top()));
+        
+        if (curr_sym == parsing_stack.top()) {
+            //db_output_dest << in_sym.type << " -> " << in_sym.lexeme << std::endl;
+            parsing_stack.pop();
+        }
+        else if (!this->is_valid(std::make_pair(parsing_stack.top(), curr_sym))) {
+            std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
+                           << "' at line " << in_sym.line_number
+                           << std::endl;
+            good_parse = false;
+        }
+        else {
+            std::cerr << "Unexpected fail state while processing: '" << in_sym.lexeme
+                           << "' at line " << in_sym.line_number
+                           << ", check parser source code" << std::endl;
+            good_parse = false;
+        }
+    }
+    else if (curr_sym == parsing_stack.top()) {
+        parsing_stack.pop();
+    }
+    else {
+        std::cerr << "Could not find symbol pair...fail state set." << std::endl;
+        std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
+                       << "' at line " << in_sym.line_number
+                       << std::endl;
+        good_parse = false;
+    }
+}
+
+//is_semantic_symbol
+//parameters: sym is a string representing a symbol to check
+//returns: true/false
+//This method determines whether the given string is a symbol used for semantic analysis
 bool parser::is_semantic_symbol(const std::string& sym) const {
     bool found = false;
 
@@ -473,6 +647,11 @@ bool parser::is_semantic_symbol(const std::string& sym) const {
     return found;
 }
 
+//get_semantics
+//parameters: none
+//returns: list
+//This method will return a constant reference to the semantics the parser derived while
+//performing syntax analysis.
 const std::list<std::string>& parser::get_semantics() const {
     return semantics_list;
 }
