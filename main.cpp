@@ -3,16 +3,19 @@
 #include <string>
 #include "lexer.h"
 #include "parser.h"
+#include "semantics.h"
 using namespace std;
 
 //main is currently configured to output only parser data
 int main(int argc, char** argv) {
     lexer rat18s_lex = lexer();
     parser rat18s_par = parser();
+    semantic rat18s_sem = semantic();
     string file_to_process;
     string target_file;
     fstream input_file;
     ofstream output_file;
+    ofstream test_output;   //before grading testing only
     bool good;
 
     if (argc < 3) {
@@ -30,8 +33,13 @@ int main(int argc, char** argv) {
         good = rat18s_lex.check_tokens(output_file);
         if (good) {
             rat18s_par.initialize_parse();
-            good = rat18s_par.parse(rat18s_lex, output_file);
+            good = rat18s_par.parse(rat18s_lex, output_file, rat18s_sem);
         }
+        test_output.open("test_semantics.txt");
+        rat18s_sem.exec_semantics(rat18s_par.get_semantics());
+        rat18s_sem.print_table();
+        cerr << endl;
+        rat18s_sem.print_instructions(test_output);
         output_file.close();
         input_file.close();
         if (!good) {
