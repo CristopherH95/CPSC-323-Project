@@ -212,6 +212,7 @@ void semantic::back_patch(const std::string& jmp_addr) {
 //returns: true/false (no errors/error found)
 //This method will go through the semantic instructions and generate object code
 bool semantic::exec_semantics(const std::list<std::string>& semant) {
+    std::cerr << "Beginning semantic analysis and code generation..." << std::endl;
     bool success = true;
     bool end_args = false;
     bool check_oper = false;
@@ -225,6 +226,8 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
     bool saved_addr = false;
     bool expect_input = false;
     bool check_int_type = false;
+    bool get_error_line = false;
+    bool chk_assignment = false;
     std::string temp_var_type = "";
     std::string temp_str = "";
     std::string oper = "";
@@ -285,11 +288,33 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             check_int_type = true;
             continue;
         }
+        if (i == "isassignvalid") {
+            chk_assignment = true;
+            continue;
+        }
+        if (!success && get_error_line) {
+            std::cerr << i << std::endl;
+            break;
+        }
+        if (chk_assignment && chk_symbol) {
+            if (!this->exists_symbol(i)) {
+                std::cerr << "Error: variable '" << i << "' was used before it was declared on line ";
+                success = false;
+                get_error_line = true;
+                continue;
+            }
+            else {
+                chk_symbol = false;
+                chk_assignment = false;
+                continue;
+            }
+        }
         if (expect_input && get_address) {
             if (!this->exists_symbol(i)) {
-                std::cerr << "Error: variable '" << i << "' was used before it was declared." << std::endl;
+                std::cerr << "Error: variable '" << i << "' was used before it was declared on line ";
                 success = false;
-                break;
+                get_error_line = true;
+                continue;
             }
             expect_input = false;
             get_address = false;
@@ -310,9 +335,10 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
         if (n_symbol && get_address && !n_symbol_type) {
             //std::cerr << "VAR NAME: " << i << std::endl;
             if (this->exists_symbol(i)) {
-                std::cerr << "Error: attempting to declare variable '" << i << "' which has already been declared." << std::endl;
+                std::cerr << "Error: attempting to re-declare variable '" << i << "' on line ";
                 success = false;
-                break;
+                get_error_line = true;
+                continue;
             }
             if (!this->add_symbol(i, temp_var_type)) {
                 std::cerr << "Failed to create variable: '" << i << "' in the symbol table, is there enough memory remaining" 
@@ -352,17 +378,19 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
         else if (check_op_arg && get_address) {
             if (chk_symbol) {
                 if (!this->exists_symbol(i)) {
-                    std::cerr << "Error: variable '" << i << "' was used before it was declared." << std::endl;
+                    std::cerr << "Error: variable '" << i << "' was used before it was declared on line ";
                     success = false;
-                    break;
+                    get_error_line = true;
+                    continue;
                 }
                 chk_symbol = false;
             }
             if (check_int_type) {
                 if (this->get_symbol(i).type != "int") {
-                    std::cerr << "Error: cannot perform arithmetic operations on non-int type." << std::endl;
+                    std::cerr << "Error: attempting to perform arithmetic operations on non-int type on line ";
                     success = false;
-                    break;
+                    get_error_line = true;
+                    continue;
                 }
                 check_int_type = false;
             }

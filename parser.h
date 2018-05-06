@@ -39,6 +39,7 @@ const std::string JMP_INSTR = "JUMP";
 const std::string LBL_INSTR = "LABEL";
 const std::string ADD_SYM_TABLE = "addtable";
 const std::string CHK_SYM_TABLE = "checktable";
+const std::string CHK_ASSIGN_DEST = "isassignvalid";
 const std::string SAVE_VAR = "savevariable";
 const std::string SAVE_TOK = "save";
 const std::string USE_SAVED = "reversetok";
@@ -56,7 +57,8 @@ const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_A
                                                 GEQ_INSTR, LEQ_INSTR, JMPZ_INSTR, JMP_INSTR, 
                                                 LBL_INSTR, ADD_SYM_TABLE, CHK_SYM_TABLE,
                                                 SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR,
-                                                SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN, CHK_INT};
+                                                SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN, CHK_INT,
+                                                CHK_ASSIGN_DEST};
 
 //Non-terminal symbols
 const std::string RAT18S = "<RAT18S>"; 
@@ -129,8 +131,8 @@ const std::string EQEQ = "==";
 const std::string NEQ = "^=";
 const std::string GREATER_THAN = ">";
 const std::string LESS_THAN = "<";
-const std::string GREATER_OR_EQ = ">=";
-const std::string LESS_OR_EQ = "<=";
+const std::string GREATER_OR_EQ = "=>";
+const std::string LESS_OR_EQ = "=<";
 const std::string PLUS_SYM = "+";
 const std::string MINUS_SYM = "-";
 const std::string MULT = "*";
@@ -184,7 +186,7 @@ const prod PROD26 = { PREP_STDIN, SC, GEN_INSTR, STD_IN_INSTR, NIL, GEN_INSTR, P
 const prod PROD27 = { WH };
 const prod PROD28 = { LCURL, SL, RCURL };
 //modded for semantics
-const prod PROD29 = { SAVE_TOK, ABS_IDENTIFIER, EQ, E, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_SAVED, SEMICOL };
+const prod PROD29 = { SAVE_TOK, CHK_SYM_TABLE, CHK_ASSIGN_DEST, ABS_IDENTIFIER, EQ, E, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_SAVED, SEMICOL };
 //modded for semantics
 const prod PROD30 = { SAVE_ADDR, LIT_IF, LPARAN, COND, RPARAN, S, BCK_PTCH, IFP };
 //modded for semantics

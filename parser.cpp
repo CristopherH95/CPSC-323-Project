@@ -393,23 +393,28 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
                 }
                 semantics_list.push_back(check_semantics);
                 if (check_semantics == PUSH_INT_INSTR || check_semantics == GET_ADDR ||
-                     check_semantics == ADD_SYM_TABLE) {
+                     check_semantics == ADD_SYM_TABLE || check_semantics == CHK_ASSIGN_DEST) {
                     //std::cerr << "PUSH_INT GET_ADDR ADD_SYM IF" << std::endl;
                     //std::cerr << "LEXEME: " << in_sym.lexeme << std::endl;
                     parsing_stack.pop();
                     if (parsing_stack.top() == USE_SAVED) {
                         //std::cerr << "USE_SAVED" << std::endl;
                         semantics_list.push_back(semantic_token.lexeme);
+                        semantics_list.push_back(std::to_string(semantic_token.line_number));
+                        parsing_stack.pop();
                     }
                     else if (parsing_stack.top() == USE_VAR) {
                         //std::cerr << "USE_VAR" << std::endl;
                         semantics_list.push_back(semantic_var.lexeme);
+                        semantics_list.push_back(std::to_string(semantic_var.line_number));
+                        parsing_stack.pop();
                     }
                     else {
                         //std::cerr << "ELSE" << std::endl;
                         if (in_sym.lexeme != LIT_TRUE && in_sym.lexeme != LIT_FALSE) {
                             //std::cerr << "NOT TRUE/FALSE" << std::endl;
                             semantics_list.push_back(in_sym.lexeme);
+                            semantics_list.push_back(std::to_string(in_sym.line_number));
                         }
                         else {
                             if (in_sym.lexeme == LIT_TRUE) {
@@ -547,23 +552,28 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
                 }
                 semantics_list.push_back(check_semantics);
                 if (check_semantics == PUSH_INT_INSTR || check_semantics == GET_ADDR ||
-                     check_semantics == ADD_SYM_TABLE) {
+                     check_semantics == ADD_SYM_TABLE || check_semantics == CHK_ASSIGN_DEST) {
                     //std::cerr << "PUSH_INT GET_ADDR ADD_SYM IF" << std::endl;
                     //std::cerr << "LEXEME: " << in_sym.lexeme << std::endl;
                     parsing_stack.pop();
                     if (parsing_stack.top() == USE_SAVED) {
                         //std::cerr << "USE_SAVED" << std::endl;
                         semantics_list.push_back(semantic_token.lexeme);
+                        semantics_list.push_back(std::to_string(semantic_token.line_number));
+                        parsing_stack.pop();
                     }
                     else if (parsing_stack.top() == USE_VAR) {
                         //std::cerr << "USE_VAR" << std::endl;
                         semantics_list.push_back(semantic_var.lexeme);
+                        semantics_list.push_back(std::to_string(semantic_var.line_number));
+                        parsing_stack.pop();
                     }
                     else {
                         //std::cerr << "ELSE" << std::endl;
                         if (in_sym.lexeme != LIT_TRUE && in_sym.lexeme != LIT_FALSE) {
                             //std::cerr << "NOT TRUE/FALSE" << std::endl;
                             semantics_list.push_back(in_sym.lexeme);
+                            semantics_list.push_back(std::to_string(in_sym.line_number));
                         }
                         else {
                             if (in_sym.lexeme == LIT_TRUE) {
@@ -590,12 +600,14 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
                 }
                 continue;
             }
+            //std::cerr << parsing_stack.top() << " -> ";
             next_prod = parse_table[std::make_pair(parsing_stack.top(), curr_sym)];
             parsing_stack.pop();
             //std::cerr << "Production retrieved is: " << next_prod.size() << " symbols." << std::endl;
             prod_end = next_prod.size() - 1;
             if (next_prod[prod_end] != empty) {
                 //std::cerr << "Applying production to parsing stack...";
+                //std::cerr << this->prod_to_string(next_prod) << std::endl;
                 for (int i = prod_end; i >= 0; i--) {
                     parsing_stack.push(next_prod[i]);
                 }
@@ -625,6 +637,7 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
         parsing_stack.pop();
     }
     else {
+        std::cerr << "TOP: " << parsing_stack.top() << std::endl;
         std::cerr << "Could not find symbol pair...fail state set." << std::endl;
         std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
                        << "' at line " << in_sym.line_number

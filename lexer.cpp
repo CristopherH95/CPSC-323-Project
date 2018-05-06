@@ -203,6 +203,8 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
     int count_no_sep = 0;
     bool found_sep = false;
     std::string check;
+    std::string merge1;
+    std::string merge2;
 
     //std::cerr << "EVAL SEPERATORS BEGIN" << std::endl;
     while (i < word.size()) {
@@ -267,6 +269,15 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
             count_no_sep++;
         }
         i++;
+        if (words.size() >= 2) {
+            if (is_operator(words[words.size() - 1]) && is_operator(words[words.size() - 2])) {
+                merge1 = words[words.size() - 1];
+                merge2 = words[words.size() - 2];
+                words.pop_back();
+                words.pop_back();
+                words.push_back(merge2 + merge1);
+            }
+        }
     }
 
     if (count_no_sep == word.size()) {
