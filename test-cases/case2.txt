@@ -1,14 +1,14 @@
-function square$ [base:real]
-{
-	return base * base;
-}
-
 %%
 
- real data1$, data2$;
- get(data1$, data2$);
- data1$ = square$(data1$);
- put(data1$);
- data2$ = square$(data2$);
- put(data2$);
- put(data1$ + data2$);
+ int data;
+ boolean test;
+ get(data);
+ put(data);
+ if (data < 10)
+  data = data + 15;
+ else
+  data = data - 15;
+ endif
+ put(data);
+ test = true;
+ put(test);
