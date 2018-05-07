@@ -50,15 +50,11 @@ bool semantic::add_symbol(const std::string& sym_to_add, const std::string& sym_
     n_sym.type = sym_type;
     n_sym.loc = memory_counter;
 
-    //std::cerr << "SYM_TO_ADD: " << sym_to_add << std::endl;
-    //std::cerr << "SYM_TYPE: " << sym_type << std::endl;
-
     sym_table.insert(std::make_pair(sym_to_add, n_sym));
     if (this->exists_symbol(sym_to_add)) {
         success = true;
     }
     else {
-        //std::cerr << "SYMBOL NOT FOUND IN TABLE AFTER CREATION" << std::endl;
         memory_counter--;
     }
 
@@ -179,7 +175,6 @@ void semantic::print_instructions(std::ostream& output_dest, bool err_out) {
 unsigned int semantic::pop_jmp_stack() {
     unsigned int temp = std::stoi(jmp_stack.top());
     jmp_stack.pop();
-    //std::cerr << "JUMP STACK POP: " << temp << std::endl;
 
     return temp;
 }
@@ -192,8 +187,6 @@ void semantic::gen_instr(const std::string& oper, const std::string& op_arg) {
     instr n_instruct;
     n_instruct.addr = last_instr_loc;
     n_instruct.oper = oper;
-    //std::cerr << "OPERAND: " << oper << std::endl;
-    //std::cerr << "OPERAND_ARG: " << op_arg << std::endl;
     n_instruct.oprnd = op_arg;
     instructions.push_back(n_instruct);
     last_instr_loc++;
@@ -206,9 +199,6 @@ void semantic::gen_instr(const std::string& oper, const std::string& op_arg) {
 void semantic::back_patch(const std::string& jmp_addr) {
     unsigned int temp_addr = this->pop_jmp_stack();
     instructions[temp_addr - 1].oprnd = jmp_addr;
-    //std::cerr << "JUMP AFTER BACK_PATCH: " << instructions[temp_addr - 1].oper
-    //                                       <<  " " << instructions[temp_addr - 1].oprnd
-    //                                       << std::endl;
 }
 
 //exec_semantics
@@ -250,35 +240,56 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
     for (std::string i : semant) {
         //std::cerr << "SEMANTIC COMMAND: " << i << std::endl;
         if (i == "addtable" && !expect_input) {
+            //If commmand is to add new table entry (and we're not expecting user input)
+            //then expect new symbol and type
             n_symbol = true;
             n_symbol_type = true;
             continue;
         }
         if (i == "checktable") {
+            //If command is to check the symbol table
+            //then set state to check symbol when we get an identifier
             chk_symbol = true;
             continue;
         }
         if (i == "geninstr") {
+            //If command is to generate an instruction
+            //then set state to begin executing the generation process
+            //set state to expect an operator
             exec_gen_instr = true;
             check_oper = true;
             continue;
         }
         if (i == "saveaddr") {
+            //If command is to save an address
+            //then push the current address location onto the address stack
+            //set state that there is an address saved
             addr.push(std::to_string(last_instr_loc));
             saved_addr = true;
             continue;
         }
         if (i == "saveelseaddr") {
+            //If command is to save the address of a jump for an else section
+            //then save the instruction location
+            //generate a jump and a label
             addr_skip_else = std::to_string(last_instr_loc);
             this->gen_instr("JUMP", "");
             this->gen_instr("LABEL", "");
             continue;
         }
         if (i == "getaddr") {
+            //If the command is to get the address of an identifier
+            //then set state to indicate we need to get an address
             get_address = true;
             continue;
         }
         if (i == "pushjmp") {
+            //If command is to push a jump onto the jump stack
+            //then push the current instruction location onto the jump stack
+            //If we're expecting an if-else statement and we don't already have
+            //an address saved for the if statement
+            //then save the address for the if statement and set state
+            //indicating we have it saved
             jmp_stack.push(std::to_string(last_instr_loc));
             if (expect_if_else && !is_if_jump_set) {
                 if_jump = std::to_string(last_instr_loc);
@@ -287,36 +298,56 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             continue;
         }
         if (i == "backpatch") {
+            //If command is to back patch
+            //then execute backpatch with current address location
+            //save the current address in case we need to change anything
+            //for an if-else statement
             this->back_patch(std::to_string(last_instr_loc));
             else_jump_back_patch = std::to_string(last_instr_loc);
             continue;
         }
         if (i == "expectinput") {
+            //If command is to expect input
+            //then set state that we are expecting an input instruction
             expect_input = true;
             continue;
         }
         if (i == "checkisint") {
+            //If command is to check if the type of a symbol is int
+            //then set state that we must check for int type
             check_int_type = true;
             continue;
         }
         if (i == "isassignvalid") {
+            //If the command is to check if an assignment is valid
+            //then set state that we must check an assignment
             chk_assignment = true;
             continue;
         }
         if (i == "invalidateaddr") {
+            //If the command is to invalidate an address in the address stack
+            //then pop an address and set that we are no longer expecting an if-else
             addr.pop();
             expect_if_else = false;
             continue;
         }
         if (i == "prepelse") {
+            //If the command is to prepare for an if-else
+            //then set state that we are expecting an if-else statement
             expect_if_else = true;
             continue;
         }
         if (!success && get_error_line) {
+            //If we are in a failure state and we need to get the line of the error's source
+            //then output the current semantic action
+            //this is because the source line should follow every potential error in the actions list
             std::cerr << i << std::endl;
             break;
         }
         if (chk_assignment && chk_symbol) {
+            //If we need to check assignment and we need to check a symbol
+            //then check the symbol table for the symbol
+            //also set state to check the type if we are dealing with a boolean
             if (!this->exists_symbol(i)) {
                 std::cerr << "Error: variable '" << i << "' was used before it was declared on line ";
                 success = false;
@@ -333,6 +364,9 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             }
         }
         if (expect_input && get_address) {
+            //If we are expecting input and we also need to get an address
+            //then the current string in the list should be an identifier for input
+            //so we must check the symbol table before resetting
             if (!this->exists_symbol(i)) {
                 std::cerr << "Error: variable '" << i << "' was used before it was declared on line ";
                 success = false;
@@ -343,26 +377,30 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             get_address = false;
         }
         if (i == "jumpelse") {
-            //this->print_instructions(std::cerr, false);
-            //std::cerr << "JUMPELSE" << " PUSHING: " << addr_skip_else << std::endl;
+            //If the current command is to configure our jumps for an if-else statement
+            //then put the address of the jump needed to skip the else into the jump stack and backpatch it
+            //next, backpatch the jump used by the if statement (in the case when its condition is false)
+            //so that its jump destination is to the label we created earlier (so that it will go into the else)
             jmp_stack.push(addr_skip_else);
             this->back_patch(std::to_string(last_instr_loc));
             iter_addr = std::stoi(addr_skip_else);
             iter_addr++;
-            //std::cerr << "JUMPELSE2" << " PUSHING: " << if_jump << std::endl;
             jmp_stack.push(if_jump);
             this->back_patch(std::to_string(iter_addr));
-            //this->print_instructions(std::cerr, false);
             if_jump = "";
             is_if_jump_set = false;
         }
         if (n_symbol && n_symbol_type) {
+            //If we are expecting to create a new symbol, and we still need its type
+            //then the current string should be the type so save it and reset our state
             temp_var_type = i;
-            //std::cerr << "TYPE: " << temp_var_type << std::endl;
             n_symbol_type = false;
         }
         if (n_symbol && get_address && !n_symbol_type) {
-            //std::cerr << "VAR NAME: " << i << std::endl;
+            //If we are expecting to create a new symbol, we need to get an address, and we do not need a type
+            //then check that the symbol has not already been declared
+            //attempt to add the new symbol with its type (should not fail unless out of memory)
+            //finally, set the default value for the symbol
             if (this->exists_symbol(i)) {
                 std::cerr << "Error: attempting to re-declare variable '" << i << "' on line ";
                 success = false;
@@ -385,6 +423,11 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             }
         }
         if (exec_gen_instr && check_oper) {
+            //If we need to generate an instruction and we need to look for an operator
+            //then the current string should be our operator
+            //if its a jump, we set that we are expecting to make a jump
+            //if we need to jump and we have an address saved, then we do not need 
+            //to look for another argument
             oper = i;
             if (oper == "JUMP") {
                 perf_jmp = true;
@@ -397,14 +440,20 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             else {
                 check_op_arg = true;
             }
-            //continue;
         }
         else if (exec_gen_instr && check_op_arg && !get_address) {
+            //If we need to generate an instruction, we need to look for another argument, and we don't 
+            //need to get an address
+            //then the current string should be the argument
             op_arg = i;
             check_op_arg = false;
             end_args = true;
         }
         else if (check_op_arg && get_address) {
+            //If we need to check for an argument and we need to get an address
+            //then if we also need to check a symbol, check that it is declared
+            //if we also need to check the type, check the type
+            //then if it's all good then get the address of the symbol as the argument
             if (chk_symbol) {
                 if (!this->exists_symbol(i)) {
                     std::cerr << "Error: variable '" << i << "' was used before it was declared on line ";
@@ -431,6 +480,10 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             end_args = true;
         }
         if (exec_gen_instr && end_args && !perf_jmp) {
+            //If we need to generate an instruction and we do not need anymore arguments and we're not 
+            //generating a jump
+            //then if we also need to check for boolean values check that first
+            //if it's all good then generate the instruction with the values we have
             if (chk_bool_type && (oper == "PUSHI" || oper == "PUSHM")) {
                 if (oper == "PUSHI" && op_arg != "1" && op_arg != "0") {
                     std::cerr << "Error: attempting to assign a non-boolean value to a boolean type on line ";
@@ -453,6 +506,9 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             exec_gen_instr = false;
         }
         else if (exec_gen_instr && end_args && perf_jmp && saved_addr) {
+            //If we need to generate an instruction, we don't need more arguments, we're doing a jump,
+            //and we have the address
+            //then generate the instruction and use the saved address as the argument for the jump
             this->gen_instr(oper, addr.top());
             addr.pop();
             end_args = false;
