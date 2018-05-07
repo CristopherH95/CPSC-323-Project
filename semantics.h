@@ -9,8 +9,6 @@
 #include <algorithm>
 #include <iomanip>
 
-//TODO: Fix ordering on semantic actions. Alter exec_semantics for symbol table checks
-
 struct symbol {
     std::string ident;
     unsigned int loc;

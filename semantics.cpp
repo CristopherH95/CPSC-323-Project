@@ -205,6 +205,7 @@ void semantic::back_patch(const std::string& jmp_addr) {
 //parameters: semant is a list of strings representing semantic instructions
 //returns: true/false (no errors/error found)
 //This method will go through the semantic instructions and generate object code
+//the method is complicated, so comments are available to explain some of the detail
 bool semantic::exec_semantics(const std::list<std::string>& semant) {
     std::cerr << "Beginning semantic analysis and code generation..." << std::endl;
     bool success = true;
