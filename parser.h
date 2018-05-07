@@ -49,6 +49,7 @@ const std::string CHK_COND = "checkcdop";
 const std::string PREP_STDIN = "expectinput";
 const std::string CHK_INT = "checkisint";
 const std::string PREP_ELSE = "prepelse";
+const std::string PREP_MATH = "prepmath";
 
 //set to check if symbol in parsing stack is for semantics
 const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_ADDR, PUSH_JUMP,
@@ -60,7 +61,7 @@ const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_A
                                                 LBL_INSTR, ADD_SYM_TABLE, CHK_SYM_TABLE,
                                                 SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR,
                                                 SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN, CHK_INT,
-                                                CHK_ASSIGN_DEST, INV_ADDR, PREP_ELSE};
+                                                CHK_ASSIGN_DEST, INV_ADDR, PREP_ELSE, PREP_MATH};
 
 //Non-terminal symbols
 const std::string RAT18S = "<RAT18S>"; 
@@ -215,6 +216,7 @@ const prod PROD43 = { SAVE_TOK, LESS_THAN };
 const prod PROD44 = { SAVE_TOK, GREATER_OR_EQ };
 //modded for semantics
 const prod PROD45 = { SAVE_TOK, LESS_OR_EQ };
+//modded for semantics
 const prod PROD46 = { T, EPPP };
 const prod PROD47 = { EP };
 const prod PROD48 = { EPP };
@@ -232,7 +234,7 @@ const prod PROD55 = { CHK_INT, DIV, FCTR, GEN_INSTR, DIV_INSTR, NIL, TPP };
 const prod PROD56 = { MINUS_SYM, PRIM };
 const prod PROD57 = { PRIM };
 //modded for semantics
-const prod PROD58 = { CHK_SYM_TABLE, GEN_INSTR, PUSH_MEM_INSTR, GET_ADDR, ABS_IDENTIFIER, PRIMP };
+const prod PROD58 = { PREP_MATH, CHK_SYM_TABLE, GEN_INSTR, PUSH_MEM_INSTR, GET_ADDR, ABS_IDENTIFIER, PRIMP };
 //modded for semantics
 const prod PROD59 = { GEN_INSTR, PUSH_INT_INSTR, ABS_INTEGER };
 const prod PROD60 = { LPARAN, E, RPARAN };

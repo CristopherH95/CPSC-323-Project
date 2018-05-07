@@ -226,6 +226,9 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
     bool chk_bool_type = false;
     bool expect_if_else = false;
     bool is_if_jump_set = false;
+    bool prepare_for_math = false;
+    bool chk_lhs_type = false;
+    std::string math_type = "";
     std::string temp_var_type = "";
     std::string temp_str = "";
     std::string temp_type_check = "";
@@ -336,6 +339,12 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             //If the command is to prepare for an if-else
             //then set state that we are expecting an if-else statement
             expect_if_else = true;
+            continue;
+        }
+        if (i == "prepmath") {
+            //If the command indicates we might see arithmetic
+            //Then prepare to check the first variable's type
+            prepare_for_math = true;
             continue;
         }
         if (!success && get_error_line) {
@@ -462,6 +471,11 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
                     get_error_line = true;
                     continue;
                 }
+                if (prepare_for_math) {
+                    math_type = this->get_symbol(i).type;
+                    prepare_for_math = false;
+                    chk_lhs_type = true;
+                }
                 chk_symbol = false;
                 temp_type_check = i;
             }
@@ -471,6 +485,15 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
                     success = false;
                     get_error_line = true;
                     continue;
+                }
+                if (chk_lhs_type) {
+                    if (math_type != "int") {
+                        std::cerr << "Error: attempting to perform arithmetic operations on non-int type on line ";
+                        success = false;
+                        get_error_line = true;
+                        continue;
+                    }
+                    chk_lhs_type = false;
                 }
                 check_int_type = false;
             }
