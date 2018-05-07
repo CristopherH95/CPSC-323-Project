@@ -520,6 +520,6 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
         }
     }
     this->gen_instr("", "");    //this is to eliminate issue where jumps can sometimes be written to the 
-                                //non-existant last line of the program
+                                //non-existent last line of the program
     return success;
 }
