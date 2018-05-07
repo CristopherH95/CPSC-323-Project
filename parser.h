@@ -14,6 +14,7 @@
 const std::string NIL = "";
 const std::string GEN_INSTR = "geninstr";
 const std::string SAVE_ADDR = "saveaddr";
+const std::string INV_ADDR = "invalidateaddr";
 const std::string SAVE_ELSE_MARK = "saveelseaddr";
 const std::string ELSE_JUMP = "jumpelse";
 const std::string GET_ADDR = "getaddr";
@@ -58,7 +59,7 @@ const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_A
                                                 LBL_INSTR, ADD_SYM_TABLE, CHK_SYM_TABLE,
                                                 SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR,
                                                 SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN, CHK_INT,
-                                                CHK_ASSIGN_DEST};
+                                                CHK_ASSIGN_DEST, INV_ADDR};
 
 //Non-terminal symbols
 const std::string RAT18S = "<RAT18S>"; 
@@ -190,8 +191,8 @@ const prod PROD29 = { SAVE_TOK, CHK_SYM_TABLE, CHK_ASSIGN_DEST, ABS_IDENTIFIER, 
 //modded for semantics
 const prod PROD30 = { SAVE_ADDR, LIT_IF, LPARAN, COND, RPARAN, S, BCK_PTCH, IFP };
 //modded for semantics
-const prod PROD31 = { SAVE_ELSE_MARK, LIT_ELSE, S, ELSE_JUMP, LIT_ENDIF };
-const prod PROD32 = { LIT_ENDIF };
+const prod PROD31 = { SAVE_ELSE_MARK, LIT_ELSE, S, ELSE_JUMP, INV_ADDR, LIT_ENDIF };
+const prod PROD32 = { INV_ADDR, LIT_ENDIF };
 const prod PROD33 = { LIT_RET, RETP };
 const prod PROD34 = { SEMICOL };
 const prod PROD35 = { E, SEMICOL };

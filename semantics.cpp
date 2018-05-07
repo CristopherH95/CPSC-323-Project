@@ -179,6 +179,7 @@ void semantic::print_instructions(std::ostream& output_dest, bool err_out) {
 unsigned int semantic::pop_jmp_stack() {
     unsigned int temp = std::stoi(jmp_stack.top());
     jmp_stack.pop();
+    //std::cerr << temp << std::endl;
 
     return temp;
 }
@@ -228,14 +229,16 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
     bool check_int_type = false;
     bool get_error_line = false;
     bool chk_assignment = false;
+    bool chk_bool_type = false;
     std::string temp_var_type = "";
     std::string temp_str = "";
+    std::string temp_type_check = "";
     std::string oper = "";
     std::string op_arg = "";
-    std::string addr = "";
     std::string addr_else = "";
     std::string else_jump_back_patch = "";
     std::string else_jump = "";
+    std::stack<std::string> addr;
     unsigned int iter_addr;
     symbol temp_sym;
 
@@ -256,7 +259,7 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             continue;
         }
         if (i == "saveaddr") {
-            addr = std::to_string(last_instr_loc);
+            addr.push(std::to_string(last_instr_loc));
             saved_addr = true;
             continue;
         }
@@ -292,6 +295,10 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             chk_assignment = true;
             continue;
         }
+        if (i == "invalidateaddr") {
+            addr.pop();
+            continue;
+        }
         if (!success && get_error_line) {
             std::cerr << i << std::endl;
             break;
@@ -304,6 +311,9 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
                 continue;
             }
             else {
+                if (this->get_symbol(i).type == "boolean") {
+                    chk_bool_type = true;
+                }
                 chk_symbol = false;
                 chk_assignment = false;
                 continue;
@@ -384,6 +394,7 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
                     continue;
                 }
                 chk_symbol = false;
+                temp_type_check = i;
             }
             if (check_int_type) {
                 if (this->get_symbol(i).type != "int") {
@@ -401,16 +412,36 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             end_args = true;
         }
         if (exec_gen_instr && end_args && !perf_jmp) {
+            if (chk_bool_type && (oper == "PUSHI" || oper == "PUSHM")) {
+                if (oper == "PUSHI" && op_arg != "1" && op_arg != "0") {
+                    std::cerr << "Error: attempting to assign a non-boolean value to a boolean type on line ";
+                    success = false;
+                    get_error_line = true;
+                    continue;
+                }
+                else if (oper == "PUSHM" && this->get_symbol(temp_type_check).type != "boolean") {
+                    std::cerr << "Error: attempting to assign a non-boolean value to a boolean type on line ";
+                    success = false;
+                    get_error_line = true;
+                    continue;
+                }
+                else {
+                    chk_bool_type = false;
+                }
+            }
             this->gen_instr(oper, op_arg);
             end_args = false;
             exec_gen_instr = false;
         }
         else if (exec_gen_instr && end_args && perf_jmp && saved_addr) {
-            this->gen_instr(oper, addr);
+            this->gen_instr(oper, addr.top());
+            addr.pop();
             end_args = false;
             exec_gen_instr = false;
             perf_jmp = false;
-            saved_addr = false;
+            if (addr.empty()) {
+                saved_addr = false;
+            }
         }
     }
     this->gen_instr("", "");    //this is to eliminate issue where jumps can sometimes be written to the 
