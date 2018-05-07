@@ -8,7 +8,7 @@
 
 -A parser for RAT18S
 
-<h1>Part3: Semantics</h1>
+<h1>Part 3: Semantics</h1>
 
 -Semantic analysis
 
