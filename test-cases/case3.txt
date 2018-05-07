@@ -1,28 +1,31 @@
-function divideby2$[num:real]
-{
-	return num / 2;
-}
-
-function printtosquare[base:real]
-{
-	while (base < base * base)
-	{
-		put(base);
-		base = base + 1;
-	}
-	return true;
-}
-
 %%
 
- real data;
+ int data, data2$, data3$, data4$;
+ boolean data5$;
  get(data);
  if (data < 100)
 	put(0);
  else
-	put(divideby2$(data));
+	put(data);
  endif
- data = data + 0.25;
- data = data - 0.05;
+ data = data + 2;
+ data = data - 2;
  put(data);
  put(0);
+ get(data2$);
+ get(data3$);
+ get(data4$);
+ put(data / data2$);
+ put(data * data3$);
+ put(data + data4$);
+ put(data2$ - data4$);
+ while (data4$ < 200)
+ {
+  data4$ = data4$ * 10;
+  if (data4$ > 150)
+   data5$ = true;
+  else
+   data5$ = false;
+  endif
+ }
+ put(data4$);
