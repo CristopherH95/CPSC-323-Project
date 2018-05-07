@@ -27,8 +27,10 @@ int main(int argc, char** argv) {
         cout << "Processing file: " << file_to_process << endl;
         cout << "Saving compilation output to file: " << target_file << endl;
         input_file.open(file_to_process);
+        cout << "Tokenizing. . ." << endl;
         rat18s_lex.process_file(input_file);
         output_file.open(target_file);
+        cout << "Checking tokens. . ." << endl;
         good = rat18s_lex.check_tokens();
         if (good) {
             rat18s_par.initialize_parse();

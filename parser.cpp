@@ -637,7 +637,7 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
         parsing_stack.pop();
     }
     else {
-        std::cerr << "TOP: " << parsing_stack.top() << std::endl;
+        //std::cerr << "TOP: " << parsing_stack.top() << std::endl;
         std::cerr << "Could not find symbol pair...fail state set." << std::endl;
         std::cerr << "Syntax error: unexpected token '" << in_sym.lexeme 
                        << "' at line " << in_sym.line_number
