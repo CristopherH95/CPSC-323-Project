@@ -270,7 +270,7 @@ void lexer::eval_seperators(const std::string& word, std::vector<std::string>& w
         }
         i++;
         if (words.size() >= 2) {
-            if (is_operator(words[words.size() - 1]) && is_operator(words[words.size() - 2])) {
+            if (is_operator(words[words.size() - 1]) && (is_operator(words[words.size() - 2]) || words[words.size() - 2] == "^")) {
                 merge1 = words[words.size() - 1];
                 merge2 = words[words.size() - 2];
                 words.pop_back();

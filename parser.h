@@ -48,6 +48,7 @@ const std::string USE_VAR = "reversevar";
 const std::string CHK_COND = "checkcdop";
 const std::string PREP_STDIN = "expectinput";
 const std::string CHK_INT = "checkisint";
+const std::string PREP_ELSE = "prepelse";
 
 //set to check if symbol in parsing stack is for semantics
 const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_ADDR, PUSH_JUMP,
@@ -59,7 +60,7 @@ const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_A
                                                 LBL_INSTR, ADD_SYM_TABLE, CHK_SYM_TABLE,
                                                 SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR,
                                                 SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN, CHK_INT,
-                                                CHK_ASSIGN_DEST, INV_ADDR};
+                                                CHK_ASSIGN_DEST, INV_ADDR, PREP_ELSE};
 
 //Non-terminal symbols
 const std::string RAT18S = "<RAT18S>"; 
@@ -189,7 +190,7 @@ const prod PROD28 = { LCURL, SL, RCURL };
 //modded for semantics
 const prod PROD29 = { SAVE_TOK, CHK_SYM_TABLE, CHK_ASSIGN_DEST, ABS_IDENTIFIER, EQ, E, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_SAVED, SEMICOL };
 //modded for semantics
-const prod PROD30 = { SAVE_ADDR, LIT_IF, LPARAN, COND, RPARAN, S, BCK_PTCH, IFP };
+const prod PROD30 = { PREP_ELSE, SAVE_ADDR, LIT_IF, LPARAN, COND, RPARAN, S, BCK_PTCH, IFP };
 //modded for semantics
 const prod PROD31 = { SAVE_ELSE_MARK, LIT_ELSE, S, ELSE_JUMP, INV_ADDR, LIT_ENDIF };
 const prod PROD32 = { INV_ADDR, LIT_ENDIF };

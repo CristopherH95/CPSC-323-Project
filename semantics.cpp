@@ -179,7 +179,7 @@ void semantic::print_instructions(std::ostream& output_dest, bool err_out) {
 unsigned int semantic::pop_jmp_stack() {
     unsigned int temp = std::stoi(jmp_stack.top());
     jmp_stack.pop();
-    //std::cerr << temp << std::endl;
+    //std::cerr << "JUMP STACK POP: " << temp << std::endl;
 
     return temp;
 }
@@ -206,6 +206,9 @@ void semantic::gen_instr(const std::string& oper, const std::string& op_arg) {
 void semantic::back_patch(const std::string& jmp_addr) {
     unsigned int temp_addr = this->pop_jmp_stack();
     instructions[temp_addr - 1].oprnd = jmp_addr;
+    //std::cerr << "JUMP AFTER BACK_PATCH: " << instructions[temp_addr - 1].oper
+    //                                       <<  " " << instructions[temp_addr - 1].oprnd
+    //                                       << std::endl;
 }
 
 //exec_semantics
@@ -230,14 +233,16 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
     bool get_error_line = false;
     bool chk_assignment = false;
     bool chk_bool_type = false;
+    bool expect_if_else = false;
+    bool is_if_jump_set = false;
     std::string temp_var_type = "";
     std::string temp_str = "";
     std::string temp_type_check = "";
     std::string oper = "";
     std::string op_arg = "";
-    std::string addr_else = "";
+    std::string addr_skip_else = "";
     std::string else_jump_back_patch = "";
-    std::string else_jump = "";
+    std::string if_jump = "";
     std::stack<std::string> addr;
     unsigned int iter_addr;
     symbol temp_sym;
@@ -264,7 +269,7 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             continue;
         }
         if (i == "saveelseaddr") {
-            addr_else = std::to_string(last_instr_loc);
+            addr_skip_else = std::to_string(last_instr_loc);
             this->gen_instr("JUMP", "");
             this->gen_instr("LABEL", "");
             continue;
@@ -275,7 +280,10 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
         }
         if (i == "pushjmp") {
             jmp_stack.push(std::to_string(last_instr_loc));
-            else_jump = std::to_string(last_instr_loc);
+            if (expect_if_else && !is_if_jump_set) {
+                if_jump = std::to_string(last_instr_loc);
+                is_if_jump_set = true;
+            }
             continue;
         }
         if (i == "backpatch") {
@@ -297,6 +305,11 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
         }
         if (i == "invalidateaddr") {
             addr.pop();
+            expect_if_else = false;
+            continue;
+        }
+        if (i == "prepelse") {
+            expect_if_else = true;
             continue;
         }
         if (!success && get_error_line) {
@@ -330,12 +343,18 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             get_address = false;
         }
         if (i == "jumpelse") {
-            jmp_stack.push(addr_else);
+            //this->print_instructions(std::cerr, false);
+            //std::cerr << "JUMPELSE" << " PUSHING: " << addr_skip_else << std::endl;
+            jmp_stack.push(addr_skip_else);
             this->back_patch(std::to_string(last_instr_loc));
-            iter_addr = std::stoi(else_jump_back_patch);
+            iter_addr = std::stoi(addr_skip_else);
             iter_addr++;
-            jmp_stack.push(else_jump);
+            //std::cerr << "JUMPELSE2" << " PUSHING: " << if_jump << std::endl;
+            jmp_stack.push(if_jump);
             this->back_patch(std::to_string(iter_addr));
+            //this->print_instructions(std::cerr, false);
+            if_jump = "";
+            is_if_jump_set = false;
         }
         if (n_symbol && n_symbol_type) {
             temp_var_type = i;
