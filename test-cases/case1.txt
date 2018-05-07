@@ -1,10 +1,8 @@
-function plus1$ [data:int]
-{
-	return data + 1;
-}
-
 %%
 
  int data;
  get(data);
- put(plus1$(data));
+ data = data + 1;
+ put(data);
+ data = data * 100;
+ put(data);
