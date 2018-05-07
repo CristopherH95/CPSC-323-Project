@@ -11,7 +11,9 @@
 <h1>Part3: Semantics</h1>
 
 -Semantic analysis
+
 -Assembly code generation for target stack machine
+
 -Simplified RAT18S rules
 
 
