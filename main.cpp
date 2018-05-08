@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
         good = rat18s_lex.check_tokens();
         if (good) {
             rat18s_par.initialize_parse();
-            good = rat18s_par.parse(rat18s_lex, rat18s_sem);
+            good = rat18s_par.parse(rat18s_lex);
         }
         if (good) {
             good = rat18s_sem.exec_semantics(rat18s_par.get_semantics());

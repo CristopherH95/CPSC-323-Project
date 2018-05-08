@@ -243,6 +243,12 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
 
     for (std::string i : semant) {
         //std::cerr << "SEMANTIC COMMAND: " << i << std::endl;
+        /*if (expect_input) {
+            std::cerr << "expect_input is true" << std::endl;
+        }
+        else {
+            std::cerr << "expect_input is false" << std::endl;
+        }*/
         if (i == "addtable" && !expect_input) {
             //If commmand is to add new table entry (and we're not expecting user input)
             //then expect new symbol and type
@@ -347,6 +353,9 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
             prepare_for_math = true;
             continue;
         }
+        if (i == "nomoreinput") {
+            expect_input = false;
+        }
         if (!success && get_error_line) {
             //If we are in a failure state and we need to get the line of the error's source
             //then output the current semantic action
@@ -383,7 +392,8 @@ bool semantic::exec_semantics(const std::list<std::string>& semant) {
                 get_error_line = true;
                 continue;
             }
-            expect_input = false;
+            this->gen_instr("STDIN", "");
+            this->gen_instr("POPM", std::to_string(this->get_symbol(i).loc));
             get_address = false;
         }
         if (i == "jumpelse") {

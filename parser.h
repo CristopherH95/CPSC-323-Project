@@ -50,6 +50,7 @@ const std::string PREP_STDIN = "expectinput";
 const std::string CHK_INT = "checkisint";
 const std::string PREP_ELSE = "prepelse";
 const std::string PREP_MATH = "prepmath";
+const std::string INPUT_DONE = "nomoreinput";
 
 //set to check if symbol in parsing stack is for semantics
 const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_ADDR, PUSH_JUMP,
@@ -61,7 +62,8 @@ const std::set<std::string> semantic_symbols = {NIL, GEN_INSTR, SAVE_ADDR, GET_A
                                                 LBL_INSTR, ADD_SYM_TABLE, CHK_SYM_TABLE,
                                                 SAVE_TOK, USE_SAVED, CHK_COND, SAVE_VAR, USE_VAR,
                                                 SAVE_ELSE_MARK, ELSE_JUMP, PREP_STDIN, CHK_INT,
-                                                CHK_ASSIGN_DEST, INV_ADDR, PREP_ELSE, PREP_MATH};
+                                                CHK_ASSIGN_DEST, INV_ADDR, PREP_ELSE, PREP_MATH,
+                                                INPUT_DONE};
 
 //Non-terminal symbols
 const std::string RAT18S = "<RAT18S>"; 
@@ -185,7 +187,7 @@ const prod PROD24 = { RET };
 //modded for semantics
 const prod PROD25 = { PR, GEN_INSTR, STD_OUT_INSTR, NIL };
 //modded for semantics
-const prod PROD26 = { PREP_STDIN, SC, GEN_INSTR, STD_IN_INSTR, NIL, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_VAR };
+const prod PROD26 = { PREP_STDIN, SC, INPUT_DONE};//GEN_INSTR, STD_IN_INSTR, NIL, GEN_INSTR, POP_MEM_INSTR, GET_ADDR, USE_VAR };
 const prod PROD27 = { WH };
 const prod PROD28 = { LCURL, SL, RCURL };
 //modded for semantics
@@ -252,12 +254,12 @@ class parser {
         bool is_valid(const std::pair<std::string, std::string>& check_key) const;
         std::string prod_to_string(const prod& production) const;
         void initialize_parse();
-        bool parse(lexer& rat18s_lex, std::ostream& db_output_dest, semantic& sem_analyzer);
-        bool parse(lexer& rat18s_lex, semantic& sem_analyzer);
+        bool parse(lexer& rat18s_lex, std::ostream& db_output_dest);
+        bool parse(lexer& rat18s_lex);
         void derive_next(const token& in_sym, const std::string& curr_sym, 
-                         std::ostream& db_output_dest, bool& good_parse, semantic& sem_analyzer);
+                         std::ostream& db_output_dest, bool& good_parse);
         void derive_next(const token& in_sym, const std::string& curr_sym, 
-                         bool& good_parse, semantic& sem_analyzer);
+                         bool& good_parse);
         bool is_semantic_symbol(const std::string& sym) const;
         const std::list<std::string>& get_semantics() const;
         

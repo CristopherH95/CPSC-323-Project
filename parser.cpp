@@ -278,7 +278,7 @@ void parser::initialize_parse() {
 //returns: true/false (success flag)
 //This method will loop over the parsing process, as long as there are no errors, there are tokens
 //and the stack has not reached the end symbol
-bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest, semantic& sem_analyzer) {
+bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest) {
     std::cerr << "Beginning parse..." << std::endl;
     token curr_tok;
     std::string in_symbol;
@@ -295,7 +295,7 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest, semantic& se
             in_symbol = curr_tok.lexeme;
         }
         //std::cerr << "Stack top before derive: " << parsing_stack.top() << std::endl;
-        this->derive_next(curr_tok, in_symbol, db_output_dest, good_parse, sem_analyzer);
+        this->derive_next(curr_tok, in_symbol, db_output_dest, good_parse);
     }
     if (good_parse) {
         std::cerr << "Parse complete" << std::endl;
@@ -313,7 +313,7 @@ bool parser::parse(lexer& rat18s_lex, std::ostream& db_output_dest, semantic& se
 //parameters:rat18s_lex is a lexer object, which will need tokens for this method to work
 //returns: true/false (success flag)
 //This method overload performs the same as the original, but without file output.
-bool parser::parse(lexer& rat18s_lex, semantic& sem_analyzer) {
+bool parser::parse(lexer& rat18s_lex) {
     std::cerr << "Beginning parse..." << std::endl;
     token curr_tok;
     std::string in_symbol;
@@ -329,7 +329,7 @@ bool parser::parse(lexer& rat18s_lex, semantic& sem_analyzer) {
             in_symbol = curr_tok.lexeme;
         }
         //std::cerr << "Stack top before derive: " << parsing_stack.top() << std::endl;
-        this->derive_next(curr_tok, in_symbol, good_parse, sem_analyzer);
+        this->derive_next(curr_tok, in_symbol, good_parse);
     }
     if (good_parse) {
         std::cerr << "Parse complete" << std::endl;
@@ -348,7 +348,7 @@ bool parser::parse(lexer& rat18s_lex, semantic& sem_analyzer) {
 //returns: none
 //This function will perform derivations based on the parse table, the input, and the parsing stack
 void parser::derive_next(const token& in_sym, const std::string& curr_sym,
-                         std::ostream& db_output_dest, bool& good_parse, semantic& sem_analyzer) {
+                         std::ostream& db_output_dest, bool& good_parse) {
     //std::cerr << "Performing derivation..." << std::endl;
     //std::cerr << "Input symbol for derivation: " << curr_sym << std::endl;
     prod next_prod;
@@ -506,8 +506,7 @@ void parser::derive_next(const token& in_sym, const std::string& curr_sym,
 //            is a flag which will be set to false if any errors are encountered
 //returns: none
 //This method overload performs the same as the original, but without file output.
-void parser::derive_next(const token& in_sym, const std::string& curr_sym,
-                         bool& good_parse, semantic& sem_analyzer) {
+void parser::derive_next(const token& in_sym, const std::string& curr_sym, bool& good_parse) {
     //std::cerr << "Performing derivation..." << std::endl;
     //std::cerr << "Input symbol for derivation: " << curr_sym << std::endl;
     prod next_prod;
